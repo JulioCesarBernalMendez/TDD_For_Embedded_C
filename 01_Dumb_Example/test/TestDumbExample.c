@@ -1,4 +1,4 @@
-#include "../../Unity/src/unity.h"
+#include "../../unity/src/unity.h"
 #include "../src/DumbExample.h"
 
 void setUp( void ) {}
