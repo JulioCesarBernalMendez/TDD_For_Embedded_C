@@ -3,7 +3,7 @@
  * @author  Julio Cesar Bernal Mendez
  * @brief   Test dumb example source file containing the test cases and test group runner for the DumbExample module.
  *          This code structure is based on the test examples provided in the "Test-Driven Development for Embedded C"
- *          book by James W. Grenning, which use unity_fixture.h instead of the examples in https://www.throwtheswitch.org/unity
+ *          book by James W. Grenning, which use unity_fixture.h unlike the examples in https://www.throwtheswitch.org/unity
  *          which use unity.h instead.
  * 
  * @version 0.1

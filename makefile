@@ -29,7 +29,12 @@
 #endif
 
 #make test: executes the specified rules for compilation and linking
-test: mkdirs test/build/objs/DumbExample.o test/build/objs/TestDumbExample.o test/build/objs/AllTests.o test/build/objs/unity.o test/build/objs/unity_fixture.o test/build/Tests.exe run
+test: mkdirs \
+	  test/build/objs/unity.o test/build/objs/unity_fixture.o \
+      test/build/objs/DumbExample.o test/build/objs/TestDumbExample.o \
+      test/build/objs/TestLedDriver.o \
+      test/build/objs/AllTests.o \
+      test/build/Tests.exe run
 
 #make mkdirs: creates the directory test/build/objs/ used to store the compiled .o files
 mkdirs:
@@ -46,6 +51,10 @@ clean:
 	rm -rf test/build/
 
 
+
+#rule to compile TestLedDriver.c into TestLedDriver.o
+test/build/objs/TestLedDriver.o: test/02_LedDriver/TestLedDriver.c
+	gcc -c -Iunity/extras/fixture/src/ -Iunity/src/ -Iunity/extras/memory/src/ -Iinclude/02_LedDriver/ $^ -o $@
 
 #rule to compile DumbExample.c into DumbExample.o
 test/build/objs/DumbExample.o: src/01_DumbExample/DumbExample.c
@@ -68,5 +77,8 @@ test/build/objs/unity_fixture.o: unity/extras/fixture/src/unity_fixture.c
 	gcc -c -Iunity/extras/fixture/src/ -Iunity/src/ -Iunity/extras/memory/src/ $^ -o $@
 
 #rule to link the specified .o files into Tests.exe
-test/build/Tests.exe: test/build/objs/unity_fixture.o test/build/objs/unity.o test/build/objs/AllTests.o test/build/objs/TestDumbExample.o test/build/objs/DumbExample.o                      
+test/build/Tests.exe: test/build/objs/unity_fixture.o test/build/objs/unity.o \
+                      test/build/objs/TestDumbExample.o test/build/objs/DumbExample.o \
+					  test/build/objs/TestLedDriver.o \
+                      test/build/objs/AllTests.o
 	gcc $^ -o $@

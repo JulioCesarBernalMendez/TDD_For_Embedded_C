@@ -16,6 +16,7 @@
 static void RunAllTests( void )
 {
     RUN_TEST_GROUP( DumbExample );
+    RUN_TEST_GROUP( LedDriver );
 }
 
 int main( int argc, const char **argv )
