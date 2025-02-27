@@ -30,9 +30,9 @@
 
 #make test: executes the specified rules for compilation and linking
 test: mkdirs \
-	  test/build/objs/unity.o test/build/objs/unity_fixture.o \
+      test/build/objs/unity.o test/build/objs/unity_fixture.o \
       test/build/objs/DumbExample.o test/build/objs/TestDumbExample.o \
-      test/build/objs/TestLedDriver.o \
+      test/build/objs/LedDriver.o test/build/objs/TestLedDriver.o \
       test/build/objs/AllTests.o \
       test/build/Tests.exe run
 
@@ -51,6 +51,9 @@ clean:
 	rm -rf test/build/
 
 
+#rule to compile LedDriver.c into LedDriver.o
+test/build/objs/LedDriver.o: src/02_LedDriver/LedDriver.c
+	gcc -c -Iinclude/02_LedDriver/ $^ -o $@
 
 #rule to compile TestLedDriver.c into TestLedDriver.o
 test/build/objs/TestLedDriver.o: test/02_LedDriver/TestLedDriver.c
@@ -79,6 +82,6 @@ test/build/objs/unity_fixture.o: unity/extras/fixture/src/unity_fixture.c
 #rule to link the specified .o files into Tests.exe
 test/build/Tests.exe: test/build/objs/unity_fixture.o test/build/objs/unity.o \
                       test/build/objs/TestDumbExample.o test/build/objs/DumbExample.o \
-					  test/build/objs/TestLedDriver.o \
+                      test/build/objs/TestLedDriver.o test/build/objs/LedDriver.o \
                       test/build/objs/AllTests.o
 	gcc $^ -o $@
