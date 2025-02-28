@@ -50,7 +50,28 @@ TEST( LedDriver, LedsOffAfterCreate )
     TEST_ASSERT_EQUAL_HEX16( 0, virtualLeds );
 }
 
+/* TEST 2 */
+TEST( LedDriver, TurnOnLedOne )
+{
+    uint16_t virtualLeds;
+
+    /* initialize the LEDs.
+       This also turns off all the LEDs  */
+    LedDriver_Create( &virtualLeds );
+
+    /* turn the first LED on.
+       The LEDs are numbered 01 through 16, so bit 0 is LED 01 */
+    LedDriver_TurnOn( 1 << 0 );
+
+    /* check LED 01 is on */
+    TEST_ASSERT_EQUAL_HEX16( 1, virtualLeds );
+}
+
 TEST_GROUP_RUNNER( LedDriver )
 {
+    /* TEST 1 */
     RUN_TEST_CASE( LedDriver, LedsOffAfterCreate );
+
+    /* TEST 2 */
+    RUN_TEST_CASE( LedDriver, TurnOnLedOne );
 }
