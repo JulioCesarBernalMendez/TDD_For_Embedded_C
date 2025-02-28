@@ -25,19 +25,33 @@
 #include "unity_fixture.h"
 #include "LedDriver.h"
 
+/* address of the 16 LEDs */
+static uint16_t virtualLeds;
+
 TEST_GROUP( LedDriver );
 
 TEST_SETUP( LedDriver )
 {
+   /* this will be called at the beginning of
+      every TEST() */
+   LedDriver_Create( &virtualLeds );
 }
 
 TEST_TEAR_DOWN( LedDriver )
 {
 }
 
-/* TEST1 */
+/* TEST 1 */
 TEST( LedDriver, LedsOffAfterCreate )
 {
+   /* note: this test has another virtualLeds and another
+            call to LedDriver_Create(), even though there
+            is already a global virtualLeds and LedDriver_Create()
+            is called automatically at the beginning of every TEST()
+            thanks to TEST_SETUP. This is because this test is a
+            special case; its goal is to test the LedDriver_Create()
+            function */
+
    /* simulate the 16 LEDs are all turned on
       during hardware initialization */
    uint16_t virtualLeds = 0xffff;
@@ -53,12 +67,6 @@ TEST( LedDriver, LedsOffAfterCreate )
 /* TEST 2 */
 TEST( LedDriver, TurnOnLedOne )
 {
-   uint16_t virtualLeds;
-
-   /* initialize the LEDs.
-      This also turns off all the LEDs  */
-   LedDriver_Create( &virtualLeds );
-
    /* turn the first LED on.
       The LEDs are numbered 01 through 16, so bit 0 is LED 01 */
    LedDriver_TurnOn( 1 << 0 );
@@ -70,12 +78,6 @@ TEST( LedDriver, TurnOnLedOne )
 /* TEST 3 */
 TEST( LedDriver, TurnOffLedOne )
 {
-   uint16_t virtualLeds;
-
-   /* initialize the LEDs.
-      This also turns off all the LEDs  */
-   LedDriver_Create( &virtualLeds );
-
    /* turn the first LED on.
       The LEDs are numbered 01 through 16, so bit 0 is LED 01 */
    LedDriver_TurnOn( 1 << 0 );
