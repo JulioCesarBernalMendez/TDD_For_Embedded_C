@@ -38,40 +38,64 @@ TEST_TEAR_DOWN( LedDriver )
 /* TEST1 */
 TEST( LedDriver, LedsOffAfterCreate )
 {
-    /* simulate the 16 LEDs are all turned on
-       during hardware initialization */
-    uint16_t virtualLeds = 0xffff;
+   /* simulate the 16 LEDs are all turned on
+      during hardware initialization */
+   uint16_t virtualLeds = 0xffff;
 
-    /* per the spec, the LedDriver_Create() is responsible for 
-       turning all LEDs off during initialization */
-    LedDriver_Create( &virtualLeds );
+   /* per the spec, the LedDriver_Create() is responsible for 
+      turning all LEDs off during initialization */
+   LedDriver_Create( &virtualLeds );
 
-    /* check that in fact all LEDs are off upon initialization */
-    TEST_ASSERT_EQUAL_HEX16( 0, virtualLeds );
+   /* check that in fact all LEDs are off upon initialization */
+   TEST_ASSERT_EQUAL_HEX16( 0, virtualLeds );
 }
 
 /* TEST 2 */
 TEST( LedDriver, TurnOnLedOne )
 {
-    uint16_t virtualLeds;
+   uint16_t virtualLeds;
 
-    /* initialize the LEDs.
-       This also turns off all the LEDs  */
-    LedDriver_Create( &virtualLeds );
+   /* initialize the LEDs.
+      This also turns off all the LEDs  */
+   LedDriver_Create( &virtualLeds );
 
-    /* turn the first LED on.
-       The LEDs are numbered 01 through 16, so bit 0 is LED 01 */
-    LedDriver_TurnOn( 1 << 0 );
+   /* turn the first LED on.
+      The LEDs are numbered 01 through 16, so bit 0 is LED 01 */
+   LedDriver_TurnOn( 1 << 0 );
 
-    /* check LED 01 is on */
-    TEST_ASSERT_EQUAL_HEX16( 1, virtualLeds );
+   /* check LED 01 is on */
+   TEST_ASSERT_EQUAL_HEX16( 1, virtualLeds );
+}
+
+/* TEST 3 */
+TEST( LedDriver, TurnOffLedOne )
+{
+   uint16_t virtualLeds;
+
+   /* initialize the LEDs.
+      This also turns off all the LEDs  */
+   LedDriver_Create( &virtualLeds );
+
+   /* turn the first LED on.
+      The LEDs are numbered 01 through 16, so bit 0 is LED 01 */
+   LedDriver_TurnOn( 1 << 0 );
+
+   /* turn the first LED off.
+      The LEDs are numbered 01 through 16, so bit 0 is LED 01 */
+   LedDriver_TurnOff( 1 << 0 );
+
+   /* check LED 01 is off */
+   TEST_ASSERT_EQUAL_HEX16( 0, virtualLeds );
 }
 
 TEST_GROUP_RUNNER( LedDriver )
 {
-    /* TEST 1 */
-    RUN_TEST_CASE( LedDriver, LedsOffAfterCreate );
+   /* TEST 1 */
+   RUN_TEST_CASE( LedDriver, LedsOffAfterCreate );
 
-    /* TEST 2 */
-    RUN_TEST_CASE( LedDriver, TurnOnLedOne );
+   /* TEST 2 */
+   RUN_TEST_CASE( LedDriver, TurnOnLedOne );
+
+   /* TEST 3 */
+   RUN_TEST_CASE( LedDriver, TurnOffLedOne );
 }

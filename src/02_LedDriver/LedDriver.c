@@ -29,3 +29,12 @@ void LedDriver_TurnOn( uint16_t ledNumber )
        won't be hard-coded and incomplete for long) */
     *ledsAddress = 1;
 }
+
+void LedDriver_TurnOff( uint16_t ledNumber )
+{
+    /* do the simplest thing to get the TurnOffLedOne test to pass...
+       hard-coding it (we're doing test driven, the TESTS are right!,
+       even though production code is not right. Don't worry, production code
+       won't be hard-coded and incomplete for long) */
+    *ledsAddress = 0;
+}
