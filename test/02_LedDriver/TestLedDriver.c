@@ -114,23 +114,18 @@ TEST( LedDriver, TurnOffLedOne )
    TEST_ASSERT_EQUAL_HEX16( 0, virtualLeds );
 }
 
-#if 0 /* commented out, this will be fixed later to make it pass */
 /* TEST 6 */
 TEST( LedDriver, TurnOffAnyLed )
 {
-   /* turn on both LEDs 9 and 8 */
-   LedDriver_TurnOn( 8 );
-   LedDriver_TurnOn( 9 );
+   /* turn on all LEDs */
+   LedDriver_TurnAllOn();
 
    /* turn off LED 8 */
    LedDriver_TurnOff( 8 );
 
-   /* check that only LED 9 is on.
-      This will actually fail since LedDriver_TurnOff() was hard coded to make
-      TurnOffLedOne test pass (we'll come back to this test later to fix it, don't worry) */
-   TEST_ASSERT_EQUAL_HEX16( 0x100, virtualLeds );
+   /* check that only LED 8 is off */
+   TEST_ASSERT_EQUAL_HEX16( 0xff7f, virtualLeds );
 }
-#endif
 
 TEST_GROUP_RUNNER( LedDriver )
 {
@@ -150,5 +145,5 @@ TEST_GROUP_RUNNER( LedDriver )
    RUN_TEST_CASE( LedDriver, TurnOffLedOne );
 
    /* TEST 6 */
-   /* RUN_TEST_CASE( LedDriver, TurnOffAnyLed ); */
+   RUN_TEST_CASE( LedDriver, TurnOffAnyLed );
 }

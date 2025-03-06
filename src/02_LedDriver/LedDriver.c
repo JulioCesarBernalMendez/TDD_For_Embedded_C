@@ -25,24 +25,21 @@ void LedDriver_Create( uint16_t *address )
 
 static uint16_t convertLedNumberToBit( int ledNumber )
 {
+    /* The offset (-1) is needed because the LEDs are numbered 1 through 16,
+       so LED 1 is bit 0, and LED 16 is bit 15 */
     return ( 1 << ( ledNumber - 1 ) );
 }
 
 void LedDriver_TurnOn( uint16_t ledNumber )
 {
-    /* turn on the specified LED number.
-       The offset (-1) is needed because the LEDs are numbered 01 through 16,
-       so LED 01 is bit 0, and LED 16 is bit 15 */
+    /* turn on the specified LED number */
     *ledsAddress |= convertLedNumberToBit( ledNumber );
 }
 
 void LedDriver_TurnOff( uint16_t ledNumber )
 {
-    /* do the simplest thing to get the TurnOffLedOne test to pass...
-       hard-coding it (we're doing test driven, the TESTS are right!,
-       even though production code is not right. Don't worry, production code
-       won't be hard-coded and incomplete for long) */
-    *ledsAddress = 0;
+    /* turn off the specified LED number, */
+    *ledsAddress &= ~convertLedNumberToBit( ledNumber );
 }
 
 void LedDriver_TurnAllOn( void )
