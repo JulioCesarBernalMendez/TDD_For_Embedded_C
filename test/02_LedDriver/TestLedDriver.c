@@ -140,11 +140,9 @@ TEST( LedDriver, LedMemoryIsNotReadable )
    /* turn on LED 8 */
    LedDriver_TurnOn( 8 );
 
-   /* at this point, if the driver could read the state of the LEDs,
+   /* at this point, if the driver can read the state of the LEDs,
       then virtualLeds would be 0x80 (7 bit high, which corresponds
-      to the 8 LED just turned on). Since this is not the case, this
-      test fails and it's proved (currently) that the LedDriver can not
-      read from the hardware */
+      to the LED 8 just turned on), overwriting the previous forced 0xffff */
    TEST_ASSERT_EQUAL_HEX16( 0x80, virtualLeds );
 }
 

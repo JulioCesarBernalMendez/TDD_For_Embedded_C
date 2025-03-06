@@ -14,13 +14,18 @@ enum { ALL_LEDS_ON = ~0, ALL_LEDS_OFF = ~ALL_LEDS_ON };
 /* LED's address */
 static uint16_t *ledsAddress;
 
+/* LED's state */
+static uint16_t ledsImage;
+
 void LedDriver_Create( uint16_t *address )
 {
     /* all the LEDs are turned on after hardware initialization.
        Turn them all off instead during the Led Driver software initialization.
        This is a Led Driver requirement */
-    ledsAddress = address;
-    *ledsAddress = ALL_LEDS_OFF;
+
+    ledsAddress  = address;      /* assign the LEDs' address */
+    ledsImage    = ALL_LEDS_OFF; /* store the LEDs' state */
+    *ledsAddress = ledsImage;    /* set the LEDs' state */
 }
 
 static uint16_t convertLedNumberToBit( int ledNumber )
@@ -32,17 +37,27 @@ static uint16_t convertLedNumberToBit( int ledNumber )
 
 void LedDriver_TurnOn( uint16_t ledNumber )
 {
+    /* update the LEDs' state */
+    ledsImage |= convertLedNumberToBit( ledNumber );
+
     /* turn on the specified LED number */
-    *ledsAddress |= convertLedNumberToBit( ledNumber );
+    *ledsAddress = ledsImage;
 }
 
 void LedDriver_TurnOff( uint16_t ledNumber )
 {
+    /* update the LEDs' state */
+    ledsImage &= ~convertLedNumberToBit( ledNumber );
+
     /* turn off the specified LED number, */
-    *ledsAddress &= ~convertLedNumberToBit( ledNumber );
+    *ledsAddress = ledsImage;
 }
 
 void LedDriver_TurnAllOn( void )
 {
+    /* store the LEDs' state */
+    ledsImage = ALL_LEDS_ON;
+
+    /* turn on all the LEDs */
     *ledsAddress = ALL_LEDS_ON;
 }
