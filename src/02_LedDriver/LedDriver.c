@@ -21,12 +21,17 @@ void LedDriver_Create( uint16_t *address )
     *ledsAddress = 0;
 }
 
+static uint16_t convertLedNumberToBit( int ledNumber )
+{
+    return ( 1 << ( ledNumber - 1 ) );
+}
+
 void LedDriver_TurnOn( uint16_t ledNumber )
 {
     /* turn on the specified LED number.
        The offset (-1) is needed because the LEDs are numbered 01 through 16,
        so LED 01 is bit 0, and LED 16 is bit 15 */
-    *ledsAddress |= 1 << ( ledNumber - 1 );
+    *ledsAddress |= convertLedNumberToBit( ledNumber );
 }
 
 void LedDriver_TurnOff( uint16_t ledNumber )
