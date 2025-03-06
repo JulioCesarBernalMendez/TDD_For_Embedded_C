@@ -127,6 +127,27 @@ TEST( LedDriver, TurnOffAnyLed )
    TEST_ASSERT_EQUAL_HEX16( 0xff7f, virtualLeds );
 }
 
+/* TEST 7 */ 
+TEST( LedDriver, LedMemoryIsNotReadable )
+{
+   /* virtualLeds is first initialized to 0 (all LEDs off) due to
+      the calling to LedDriver_Create() before each test's execution */
+
+   /* overwrite the variable (not hardware) that stores the
+      state of the LEDs */
+   virtualLeds = 0xffff;
+
+   /* turn on LED 8 */
+   LedDriver_TurnOn( 8 );
+
+   /* at this point, if the driver could read the state of the LEDs,
+      then virtualLeds would be 0x80 (7 bit high, which corresponds
+      to the 8 LED just turned on). Since this is not the case, this
+      test fails and it's proved (currently) that the LedDriver can not
+      read from the hardware */
+   TEST_ASSERT_EQUAL_HEX16( 0x80, virtualLeds );
+}
+
 TEST_GROUP_RUNNER( LedDriver )
 {
    /* TEST 1 */
@@ -146,4 +167,7 @@ TEST_GROUP_RUNNER( LedDriver )
 
    /* TEST 6 */
    RUN_TEST_CASE( LedDriver, TurnOffAnyLed );
+
+   /* TEST 7 */
+   RUN_TEST_CASE( LedDriver, LedMemoryIsNotReadable );
 }
