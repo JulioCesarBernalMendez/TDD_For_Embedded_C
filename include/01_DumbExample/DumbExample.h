@@ -8,6 +8,11 @@
  * @date    2025-02-21
  */
 
-#include <stdint.h>
+#ifndef DUMBEXAMPLE_H
+#define DUMBEXAMPLE_H
 
-int8_t AverageThreeBytes( int8_t a, int8_t b, int8_t c );
+    #include <stdint.h>
+
+    int8_t AverageThreeBytes( int8_t a, int8_t b, int8_t c );
+
+#endif

@@ -7,8 +7,13 @@
  * @date    2025-02-27
  */
 
-#include <stdint.h>
+#ifndef LEDDRIVER_H
+#define LEDDRIVER_H
 
-void LedDriver_Create( uint16_t *virtualLeds );
-void LedDriver_TurnOn( uint16_t ledNumber );
-void LedDriver_TurnOff( uint16_t ledNumber );
+    #include <stdint.h>
+
+    void LedDriver_Create( uint16_t *virtualLeds );
+    void LedDriver_TurnOn( uint16_t ledNumber );
+    void LedDriver_TurnOff( uint16_t ledNumber );
+
+#endif

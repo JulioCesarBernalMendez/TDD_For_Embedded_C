@@ -36,6 +36,15 @@ test: mkdirs \
       test/build/objs/AllTests.o \
       test/build/Tests.exe run
 
+#make debug: executes the specified rules for compilation and linking, plus runs the executable in gdb debug mode
+debug: mkdirs \
+       test/build/objs/unity.o test/build/objs/unity_fixture.o \
+       test/build/objs/DumbExample.o test/build/objs/TestDumbExample.o \
+       test/build/objs/LedDriver.o test/build/objs/TestLedDriver.o \
+       test/build/objs/AllTests.o \
+       test/build/Tests.exe
+	gdb ./test/build/Tests.exe
+
 #make mkdirs: creates the directory test/build/objs/ used to store the compiled .o files
 mkdirs:
 	mkdir -p test/build/objs/
@@ -53,31 +62,31 @@ clean:
 
 #rule to compile LedDriver.c into LedDriver.o
 test/build/objs/LedDriver.o: src/02_LedDriver/LedDriver.c
-	gcc -c -Iinclude/02_LedDriver/ $^ -o $@
+	gcc -c -g -Iinclude/02_LedDriver/ $^ -o $@
 
 #rule to compile TestLedDriver.c into TestLedDriver.o
 test/build/objs/TestLedDriver.o: test/02_LedDriver/TestLedDriver.c
-	gcc -c -Iunity/extras/fixture/src/ -Iunity/src/ -Iunity/extras/memory/src/ -Iinclude/02_LedDriver/ $^ -o $@
+	gcc -c -g -Iunity/extras/fixture/src/ -Iunity/src/ -Iunity/extras/memory/src/ -Iinclude/02_LedDriver/ $^ -o $@
 
 #rule to compile DumbExample.c into DumbExample.o
 test/build/objs/DumbExample.o: src/01_DumbExample/DumbExample.c
-	gcc -c -Iinclude/01_DumbExample/ $^ -o $@
+	gcc -c -g -Iinclude/01_DumbExample/ $^ -o $@
 
 #rule to compile TestDumbExample.c into TestDumbExample.o
 test/build/objs/TestDumbExample.o: test/01_DumbExample/TestDumbExample.c
-	gcc -c -Iunity/extras/fixture/src/ -Iunity/src/ -Iunity/extras/memory/src/ -Iinclude/01_DumbExample/ $^ -o $@
+	gcc -c -g -Iunity/extras/fixture/src/ -Iunity/src/ -Iunity/extras/memory/src/ -Iinclude/01_DumbExample/ $^ -o $@
 
 #rule to compile AllTests.c into AllTests.o
 test/build/objs/AllTests.o: test/AllTests.c
-	gcc -c -Iunity/extras/fixture/src/ -Iunity/src/ -Iunity/extras/memory/src/ $^ -o $@
+	gcc -c -g -Iunity/extras/fixture/src/ -Iunity/src/ -Iunity/extras/memory/src/ $^ -o $@
 
 #rule to compile unity.c into unity.o
 test/build/objs/unity.o: unity/src/unity.c
-	gcc -c -Iunity/src/ $^ -o $@
+	gcc -c -g -Iunity/src/ $^ -o $@
 
 #rule to compile unity_fixture.c into unity_fixture.o
 test/build/objs/unity_fixture.o: unity/extras/fixture/src/unity_fixture.c
-	gcc -c -Iunity/extras/fixture/src/ -Iunity/src/ -Iunity/extras/memory/src/ $^ -o $@
+	gcc -c -g -Iunity/extras/fixture/src/ -Iunity/src/ -Iunity/extras/memory/src/ $^ -o $@
 
 #rule to link the specified .o files into Tests.exe
 test/build/Tests.exe: test/build/objs/unity_fixture.o test/build/objs/unity.o \

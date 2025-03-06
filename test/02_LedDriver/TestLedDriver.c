@@ -33,7 +33,10 @@ TEST_GROUP( LedDriver );
 TEST_SETUP( LedDriver )
 {
    /* this will be called at the beginning of
-      every TEST() */
+      every TEST().
+      LedDriver_Create() will assign the address of virtualLeds (used here in the tests)
+      as the address of ledsAddress (which is used in the LedDriver) and will initialize
+      all of the LEDs to 0 (off) */
    LedDriver_Create( &virtualLeds );
 }
 
@@ -67,9 +70,8 @@ TEST( LedDriver, LedsOffAfterCreate )
 /* TEST 2 */
 TEST( LedDriver, TurnOnLedOne )
 {
-   /* turn the first LED on.
-      The LEDs are numbered 01 through 16, so bit 0 is LED 01 */
-   LedDriver_TurnOn( 1 << 0 );
+   /* turn the first LED on */
+   LedDriver_TurnOn( 1 );
 
    /* check LED 01 is on */
    TEST_ASSERT_EQUAL_HEX16( 1, virtualLeds );
@@ -78,16 +80,28 @@ TEST( LedDriver, TurnOnLedOne )
 /* TEST 3 */
 TEST( LedDriver, TurnOffLedOne )
 {
-   /* turn the first LED on.
-      The LEDs are numbered 01 through 16, so bit 0 is LED 01 */
-   LedDriver_TurnOn( 1 << 0 );
+   /* turn the first LED on */
+   LedDriver_TurnOn( 1 );
 
    /* turn the first LED off.
       The LEDs are numbered 01 through 16, so bit 0 is LED 01 */
-   LedDriver_TurnOff( 1 << 0 );
+   LedDriver_TurnOff( 1 );
 
    /* check LED 01 is off */
    TEST_ASSERT_EQUAL_HEX16( 0, virtualLeds );
+}
+
+/* TEST 4 */
+TEST( LedDriver, TurnOnMultipleLeds )
+{
+   /* turn on both LEDs 9 and 8 */
+   LedDriver_TurnOn( 8 );
+   LedDriver_TurnOn( 9 );
+
+   /* check both leds 9 and 8 are on.
+      The LEDs are numbered 01 through 16, so bit 8 is LED 09
+      and bit 7 is LED 08, which equals 0x180 */
+   TEST_ASSERT_EQUAL_HEX16( 0x180, virtualLeds );
 }
 
 TEST_GROUP_RUNNER( LedDriver )
@@ -100,4 +114,7 @@ TEST_GROUP_RUNNER( LedDriver )
 
    /* TEST 3 */
    RUN_TEST_CASE( LedDriver, TurnOffLedOne );
+
+   /* TEST 4 */
+   RUN_TEST_CASE( LedDriver, TurnOnMultipleLeds );
 }
