@@ -9,6 +9,8 @@
 
 #include "LedDriver.h"
 
+enum { ALL_LEDS_ON = ~0, ALL_LEDS_OFF = ~ALL_LEDS_ON };
+
 /* LED's address */
 static uint16_t *ledsAddress;
 
@@ -18,7 +20,7 @@ void LedDriver_Create( uint16_t *address )
        Turn them all off instead during the Led Driver software initialization.
        This is a Led Driver requirement */
     ledsAddress = address;
-    *ledsAddress = 0;
+    *ledsAddress = ALL_LEDS_OFF;
 }
 
 static uint16_t convertLedNumberToBit( int ledNumber )
@@ -45,5 +47,5 @@ void LedDriver_TurnOff( uint16_t ledNumber )
 
 void LedDriver_TurnAllOn( void )
 {
-    *ledsAddress = 0xffff;
+    *ledsAddress = ALL_LEDS_ON;
 }
