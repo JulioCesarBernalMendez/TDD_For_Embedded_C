@@ -42,3 +42,8 @@ void LedDriver_TurnOff( uint16_t ledNumber )
        won't be hard-coded and incomplete for long) */
     *ledsAddress = 0;
 }
+
+void LedDriver_TurnAllOn( void )
+{
+    *ledsAddress = 0xffff;
+}
