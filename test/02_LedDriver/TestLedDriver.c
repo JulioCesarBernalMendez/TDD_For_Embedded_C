@@ -70,38 +70,54 @@ TEST( LedDriver, LedsOffAfterCreate )
 /* TEST 2 */
 TEST( LedDriver, TurnOnLedOne )
 {
-   /* turn the first LED on */
+   /* turn the first LED (LED 1) on */
    LedDriver_TurnOn( 1 );
 
-   /* check LED 01 is on */
+   /* check LED 1 is on */
    TEST_ASSERT_EQUAL_HEX16( 1, virtualLeds );
 }
 
 /* TEST 3 */
-TEST( LedDriver, TurnOffLedOne )
-{
-   /* turn the first LED on */
-   LedDriver_TurnOn( 1 );
-
-   /* turn the first LED off.
-      The LEDs are numbered 01 through 16, so bit 0 is LED 01 */
-   LedDriver_TurnOff( 1 );
-
-   /* check LED 01 is off */
-   TEST_ASSERT_EQUAL_HEX16( 0, virtualLeds );
-}
-
-/* TEST 4 */
 TEST( LedDriver, TurnOnMultipleLeds )
 {
    /* turn on both LEDs 9 and 8 */
    LedDriver_TurnOn( 8 );
    LedDriver_TurnOn( 9 );
 
-   /* check both leds 9 and 8 are on.
-      The LEDs are numbered 01 through 16, so bit 8 is LED 09
-      and bit 7 is LED 08, which equals 0x180 */
+   /* check both LEDs 9 and 8 are on.
+      The LEDs are numbered 1 through 16, so bit 8 is LED 9
+      and bit 7 is LED 8, which equals 0x180 */
    TEST_ASSERT_EQUAL_HEX16( 0x180, virtualLeds );
+}
+
+/* TEST 4 */
+TEST( LedDriver, TurnOffLedOne )
+{
+   /* turn the first LED (LED 1) on */
+   LedDriver_TurnOn( 1 );
+
+   /* turn the first LED off.
+      The LEDs are numbered 01 through 16, so bit 0 is LED 01 */
+   LedDriver_TurnOff( 1 );
+
+   /* check LED 1 is off */
+   TEST_ASSERT_EQUAL_HEX16( 0, virtualLeds );
+}
+
+/* TEST 5 */
+TEST( LedDriver, TurnOffAnyLed )
+{
+   /* turn on both LEDs 9 and 8 */
+   LedDriver_TurnOn( 8 );
+   LedDriver_TurnOn( 9 );
+
+   /* turn off LED 8 */
+   LedDriver_TurnOff( 8 );
+
+   /* check that only LED 9 is on.
+      This will actually fail since LedDriver_TurnOff() was hard coded to make
+      TurnOffLedOne test pass (we'll come back to this test later to fix it, don't worry) */
+   TEST_ASSERT_EQUAL_HEX16( 0x100, virtualLeds );
 }
 
 TEST_GROUP_RUNNER( LedDriver )
@@ -113,8 +129,11 @@ TEST_GROUP_RUNNER( LedDriver )
    RUN_TEST_CASE( LedDriver, TurnOnLedOne );
 
    /* TEST 3 */
-   RUN_TEST_CASE( LedDriver, TurnOffLedOne );
+   RUN_TEST_CASE( LedDriver, TurnOnMultipleLeds );
 
    /* TEST 4 */
-   RUN_TEST_CASE( LedDriver, TurnOnMultipleLeds );
+   RUN_TEST_CASE( LedDriver, TurnOffLedOne );
+
+   /* TEST 5 */
+   RUN_TEST_CASE( LedDriver, TurnOffAnyLed );
 }
