@@ -17,6 +17,12 @@ static uint16_t *ledsAddress;
 /* LED's state */
 static uint16_t ledsImage;
 
+static void updateHardware( void )
+{
+    /* set the LEDs' state */
+    *ledsAddress = ledsImage;
+}
+
 void LedDriver_Create( uint16_t *address )
 {
     /* all the LEDs are turned on after hardware initialization.
@@ -25,7 +31,7 @@ void LedDriver_Create( uint16_t *address )
 
     ledsAddress  = address;      /* assign the LEDs' address */
     ledsImage    = ALL_LEDS_OFF; /* store the LEDs' state */
-    *ledsAddress = ledsImage;    /* set the LEDs' state */
+    updateHardware();            /* set the LEDs' state */
 }
 
 static uint16_t convertLedNumberToBit( int ledNumber )
@@ -41,7 +47,7 @@ void LedDriver_TurnOn( uint16_t ledNumber )
     ledsImage |= convertLedNumberToBit( ledNumber );
 
     /* turn on the specified LED number */
-    *ledsAddress = ledsImage;
+    updateHardware();
 }
 
 void LedDriver_TurnOff( uint16_t ledNumber )
@@ -50,7 +56,7 @@ void LedDriver_TurnOff( uint16_t ledNumber )
     ledsImage &= ~convertLedNumberToBit( ledNumber );
 
     /* turn off the specified LED number, */
-    *ledsAddress = ledsImage;
+    updateHardware();
 }
 
 void LedDriver_TurnAllOn( void )
@@ -59,5 +65,5 @@ void LedDriver_TurnAllOn( void )
     ledsImage = ALL_LEDS_ON;
 
     /* turn on all the LEDs */
-    *ledsAddress = ALL_LEDS_ON;
+    updateHardware();
 }
