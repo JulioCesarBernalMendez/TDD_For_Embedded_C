@@ -163,15 +163,36 @@ TEST( LedDriver, UpperAndLowerBounds )
 TEST( LedDriver, OutOfBoundsChangesNothing )
 {
    /* this test exercises the LedDriver with some fence-post values
-      and a way out-of-bounds value */
-   LedDriver_TurnOn( -1 );
-   LedDriver_TurnOn( 0 );
-   LedDriver_TurnOn( 17 );
-   LedDriver_TurnOn( 3141 );
+      and a way out-of-bounds value.
+      If everything was well done, then nothing should have happened
+      when writing out of the legal LED values...
+      however this was not the case:
+      
+      By including the assertion after each LedDriver_TurnOn(), the test results
+      show that LedDriver_TurnOn( 3141 ) is the source of the failure.
+      This actually results in virtualLeds being set to 0x10, in other words,
+      it sets the bit associated with LED 5. 5 is the remainder of 3141 divided by 32.
 
-   /* if everything was well done, then nothing should have happened
-      when writing out of the legal LED values */
-   TEST_ASSERT_EQUAL_HEX16( 0, virtualLeds );
+      In conclusion Bit shifting actually rotates the bit through a 32-bit int,
+      to confirm this, turn on LED 33, this results in the low order bit being set (0x01).
+
+      Notice also that turning on LED 17 causes no problem, so the bit shifting does not
+      rotate the bit through a 16-bit int, this supports the theory of the 32-bit int rotation */
+      
+   LedDriver_TurnOn( -1 );
+   TEST_ASSERT_EQUAL_HEX16( 0, virtualLeds ); /* does this cause the test to fail? */
+
+   LedDriver_TurnOn( 0 );
+   TEST_ASSERT_EQUAL_HEX16( 0, virtualLeds ); /* or does this cause the test to fail? */
+
+   LedDriver_TurnOn( 17 );
+   TEST_ASSERT_EQUAL_HEX16( 0, virtualLeds ); /* or does this cause the test to fail? */
+
+   // LedDriver_TurnOn( 33 );
+   // TEST_ASSERT_EQUAL_HEX16( 0, virtualLeds ); /* or does this cause the test to fail? */
+
+   LedDriver_TurnOn( 3141 );
+   TEST_ASSERT_EQUAL_HEX16( 0, virtualLeds ); /* or does this cause the test to fail? */
 }
 
 TEST_GROUP_RUNNER( LedDriver )
