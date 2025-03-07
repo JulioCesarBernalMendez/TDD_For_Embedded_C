@@ -43,11 +43,15 @@ static uint16_t convertLedNumberToBit( int ledNumber )
 
 void LedDriver_TurnOn( uint16_t ledNumber )
 {
-    /* update the LEDs' state */
-    ledsImage |= convertLedNumberToBit( ledNumber );
+    /* only turn on LEDs within the 1-16 range */
+    if ( ( ledNumber >= 1 ) && ( ledNumber <= 16 ) )
+    {
+        /* update the LEDs' state */
+        ledsImage |= convertLedNumberToBit( ledNumber );
 
-    /* turn on the specified LED number */
-    updateHardware();
+        /* turn on the specified LED number */
+        updateHardware();
+    }
 }
 
 void LedDriver_TurnOff( uint16_t ledNumber )
