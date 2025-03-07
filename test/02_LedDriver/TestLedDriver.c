@@ -149,12 +149,29 @@ TEST( LedDriver, LedMemoryIsNotReadable )
 /* TEST 8 */
 TEST( LedDriver, UpperAndLowerBounds )
 {
+   /* this test checks the upper and lower bounds of the legal LED values */
+
    /* turn on both LEDs 1 and 16 */
    LedDriver_TurnOn( 1 );
    LedDriver_TurnOn( 16 );
 
    /* check that both LEDs 1 and 16 are on */
    TEST_ASSERT_EQUAL_HEX16( 0x8001, virtualLeds );
+}
+
+/* TEST 9 */
+TEST( LedDriver, OutOfBoundsChangesNothing )
+{
+   /* this test exercises the LedDriver with some fence-post values
+      and a way out-of-bounds value */
+   LedDriver_TurnOn( -1 );
+   LedDriver_TurnOn( 0 );
+   LedDriver_TurnOn( 17 );
+   LedDriver_TurnOn( 3141 );
+
+   /* if everything was well done, then nothing should have happened
+      when writing out of the legal LED values */
+   TEST_ASSERT_EQUAL_HEX16( 0, virtualLeds );
 }
 
 TEST_GROUP_RUNNER( LedDriver )
@@ -182,4 +199,7 @@ TEST_GROUP_RUNNER( LedDriver )
 
    /* TEST 8 */
    RUN_TEST_CASE( LedDriver, UpperAndLowerBounds );
+
+   /* TEST 9 */
+   RUN_TEST_CASE( LedDriver, OutOfBoundsChangesNothing );
 }
