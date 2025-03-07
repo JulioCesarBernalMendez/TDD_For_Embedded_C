@@ -160,7 +160,7 @@ TEST( LedDriver, UpperAndLowerBounds )
 }
 
 /* TEST 9 */
-TEST( LedDriver, OutOfBoundsChangesNothing )
+TEST( LedDriver, OutOfBoundsTurnOnDoesNoHarm )
 {
    /* this test exercises the LedDriver with some fence-post values
       and a way out-of-bounds value */
@@ -170,8 +170,28 @@ TEST( LedDriver, OutOfBoundsChangesNothing )
    LedDriver_TurnOn( 3141 );
 
    /* if everything was well done, then nothing should have happened
-      when writing out of the legal LED values */
+      when writing out of the legal LED values. All 16 LEDs should be off */
    TEST_ASSERT_EQUAL_HEX16( 0, virtualLeds );
+}
+
+/* TEST 10 */
+TEST( LedDriver, OutOfBoundsTurnOffDoesNoHarm )
+{
+   /* this test exercises the LedDriver with some fence-post values
+      and a way out-of-bounds value */
+
+   /* turn on all the LEDs */
+   LedDriver_TurnAllOn();
+
+   /* attempt to turn off out-of-bounds LEDs */
+   LedDriver_TurnOff( -1 );
+   LedDriver_TurnOff( 0 );
+   LedDriver_TurnOff( 17 );
+   LedDriver_TurnOff( 3141 );
+
+   /* if everything was well done, then nothing should have happened
+      when writing out of the legal LED values, All 16 LEDs should be on */
+   TEST_ASSERT_EQUAL_HEX16( 0xffff, virtualLeds );
 }
 
 TEST_GROUP_RUNNER( LedDriver )
@@ -201,5 +221,8 @@ TEST_GROUP_RUNNER( LedDriver )
    RUN_TEST_CASE( LedDriver, UpperAndLowerBounds );
 
    /* TEST 9 */
-   RUN_TEST_CASE( LedDriver, OutOfBoundsChangesNothing );
+   RUN_TEST_CASE( LedDriver, OutOfBoundsTurnOnDoesNoHarm );
+
+   /* TEST 10 */
+   RUN_TEST_CASE( LedDriver, OutOfBoundsTurnOffDoesNoHarm );
 }

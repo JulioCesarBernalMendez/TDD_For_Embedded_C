@@ -56,11 +56,15 @@ void LedDriver_TurnOn( uint16_t ledNumber )
 
 void LedDriver_TurnOff( uint16_t ledNumber )
 {
-    /* update the LEDs' state */
-    ledsImage &= ~convertLedNumberToBit( ledNumber );
+    /* only turn off LEDs within the 1-16 range */
+    if ( ( ledNumber >= 1 ) && ( ledNumber <= 16 ) )
+    {
+        /* update the LEDs' state */
+        ledsImage &= ~convertLedNumberToBit( ledNumber );
 
-    /* turn off the specified LED number, */
-    updateHardware();
+        /* turn off the specified LED number, */
+        updateHardware();
+    }
 }
 
 void LedDriver_TurnAllOn( void )
