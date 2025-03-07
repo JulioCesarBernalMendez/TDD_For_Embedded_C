@@ -146,6 +146,17 @@ TEST( LedDriver, LedMemoryIsNotReadable )
    TEST_ASSERT_EQUAL_HEX16( 0x80, virtualLeds );
 }
 
+/* TEST 8 */
+TEST( LedDriver, UpperAndLowerBounds )
+{
+   /* turn on both LEDs 1 and 16 */
+   LedDriver_TurnOn( 1 );
+   LedDriver_TurnOn( 16 );
+
+   /* check that both LEDs 1 and 16 are on */
+   TEST_ASSERT_EQUAL_HEX16( 0x8001, virtualLeds );
+}
+
 TEST_GROUP_RUNNER( LedDriver )
 {
    /* TEST 1 */
@@ -168,4 +179,7 @@ TEST_GROUP_RUNNER( LedDriver )
 
    /* TEST 7 */
    RUN_TEST_CASE( LedDriver, LedMemoryIsNotReadable );
+
+   /* TEST 8 */
+   RUN_TEST_CASE( LedDriver, UpperAndLowerBounds );
 }
