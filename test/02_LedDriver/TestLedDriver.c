@@ -217,6 +217,12 @@ TEST( LedDriver, OutOfBoundsProducesRuntimeError )
    TEST_ASSERT_EQUAL( ( uint16_t ) -2, errorParameter );
 }
 
+/* TEST 12 */
+IGNORE_TEST( LedDriver, OutOfBoundsToDo )
+{
+   /* TODO: what should we do during runtime? */
+}
+
 TEST_GROUP_RUNNER( LedDriver )
 {
    /* TEST 1 */
@@ -251,4 +257,7 @@ TEST_GROUP_RUNNER( LedDriver )
 
    /* TEST 11 */
    RUN_TEST_CASE( LedDriver, OutOfBoundsProducesRuntimeError );
+
+   /* TEST 12 */
+   RUN_TEST_CASE( LedDriver, OutOfBoundsToDo );
 }
