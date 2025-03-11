@@ -72,7 +72,7 @@ test/build/objs/LedDriver.o: src/02_LedDriver/LedDriver.c
 
 #rule to compile TestLedDriver.c into TestLedDriver.o
 test/build/objs/TestLedDriver.o: test/02_LedDriver/TestLedDriver.c
-	gcc -c -g -Iunity/extras/fixture/src/ -Iunity/src/ -Iunity/extras/memory/src/ -Iinclude/02_LedDriver/ $^ -o $@
+	gcc -c -g -Iunity/extras/fixture/src/ -Iunity/src/ -Iunity/extras/memory/src/ -Iinclude/02_LedDriver/ -Imocks/ $^ -o $@
 
 #rule to compile DumbExample.c into DumbExample.o
 test/build/objs/DumbExample.o: src/01_DumbExample/DumbExample.c

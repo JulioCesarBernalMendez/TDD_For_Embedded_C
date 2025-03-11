@@ -24,6 +24,7 @@
 
 #include "unity_fixture.h"
 #include "LedDriver.h"
+#include "RuntimeErrorStub.h"
 
 /* address of the 16 LEDs */
 static uint16_t virtualLeds;
@@ -194,6 +195,26 @@ TEST( LedDriver, OutOfBoundsTurnOffDoesNoHarm )
    TEST_ASSERT_EQUAL_HEX16( 0xffff, virtualLeds );
 }
 
+/* TEST 11 */
+TEST( LedDriver, OutOfBoundsProducesRuntimeError )
+{
+   const char *errorMessage;
+   int errorParameter;
+
+   /* attempt to turn off an out-of-bounds LED */
+   LedDriver_TurnOn( -2 );
+
+   /* get the last runtime error message and error parameter */
+   errorMessage = RuntimeErrorStub_GetLastError();
+   errorParameter = RuntimeErrorStub_GetLastParameter();
+
+   /* check the error message is "LED Driver: out-of-bounds LED" */
+   TEST_ASSERT_EQUAL_STRING( "LED Driver: out-of-bounds LED", errorMessage );
+
+   /* check the last error parameter is the same as the out-of-bounds LED number (-2) */
+   TEST_ASSERT_EQUAL( -2, errorParameter );
+}
+
 TEST_GROUP_RUNNER( LedDriver )
 {
    /* TEST 1 */
@@ -225,4 +246,7 @@ TEST_GROUP_RUNNER( LedDriver )
 
    /* TEST 10 */
    RUN_TEST_CASE( LedDriver, OutOfBoundsTurnOffDoesNoHarm );
+
+   /* TEST 11 */
+   RUN_TEST_CASE( LedDriver, OutOfBoundsProducesRuntimeError );
 }
