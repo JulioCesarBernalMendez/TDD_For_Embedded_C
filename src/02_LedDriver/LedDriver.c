@@ -11,6 +11,7 @@
 #include "RuntimeError.h"
 
 enum { ALL_LEDS_ON = ~0, ALL_LEDS_OFF = ~ALL_LEDS_ON };
+enum { FIRST_LED = 1, LAST_LED = 16 };
 
 /* LED's address */
 static uint16_t *ledsAddress;
@@ -22,6 +23,12 @@ static void updateHardware( void )
 {
     /* set the LEDs' state */
     *ledsAddress = ledsImage;
+}
+
+static BOOL IsLedInOfBounds( int ledNumber )
+{
+    /* return TRUE if LED is within the valid range, return FALSE otherwise */
+    return ( ( ledNumber >= FIRST_LED ) && ( ledNumber <= LAST_LED ) );
 }
 
 void LedDriver_Create( uint16_t *address )
@@ -45,7 +52,7 @@ static uint16_t convertLedNumberToBit( int ledNumber )
 void LedDriver_TurnOn( uint16_t ledNumber )
 {
     /* only turn on LEDs within the 1-16 range */
-    if ( ( ledNumber >= 1 ) && ( ledNumber <= 16 ) )
+    if ( IsLedInOfBounds( ledNumber ) )
     {
         /* update the LEDs' state */
         ledsImage |= convertLedNumberToBit( ledNumber );
@@ -66,7 +73,7 @@ void LedDriver_TurnOn( uint16_t ledNumber )
 void LedDriver_TurnOff( uint16_t ledNumber )
 {
     /* only turn off LEDs within the 1-16 range */
-    if ( ( ledNumber >= 1 ) && ( ledNumber <= 16 ) )
+    if ( IsLedInOfBounds( ledNumber ) )
     {
         /* update the LEDs' state */
         ledsImage &= ~convertLedNumberToBit( ledNumber );

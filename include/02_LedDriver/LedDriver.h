@@ -12,6 +12,8 @@
 
     #include <stdint.h>
 
+    typedef int BOOL;
+
     void LedDriver_Create( uint16_t *virtualLeds );
     void LedDriver_TurnOn( uint16_t ledNumber );
     void LedDriver_TurnOff( uint16_t ledNumber );
