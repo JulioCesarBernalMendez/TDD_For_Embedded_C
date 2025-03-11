@@ -33,6 +33,7 @@ test: mkdirs \
       test/build/objs/unity.o test/build/objs/unity_fixture.o \
       test/build/objs/DumbExample.o test/build/objs/TestDumbExample.o \
       test/build/objs/LedDriver.o test/build/objs/TestLedDriver.o \
+      test/build/objs/RuntimeErrorStub.o \
       test/build/objs/AllTests.o \
       test/build/Tests.exe run
 
@@ -41,6 +42,7 @@ debug: mkdirs \
        test/build/objs/unity.o test/build/objs/unity_fixture.o \
        test/build/objs/DumbExample.o test/build/objs/TestDumbExample.o \
        test/build/objs/LedDriver.o test/build/objs/TestLedDriver.o \
+       test/build/objs/RuntimeErrorStub.o \
        test/build/objs/AllTests.o \
        test/build/Tests.exe
 	gdb ./test/build/Tests.exe
@@ -59,6 +61,10 @@ clean:
 #	rm -f test/build/Tests.exe test/build/objs/*.o
 	rm -rf test/build/
 
+
+#rule to compile RuntimeErrorStub.c into RuntimeErrorStub.o
+test/build/objs/RuntimeErrorStub.o: mocks/RuntimeErrorStub.c
+	gcc -c -g -Iinclude/util/ -Imocks/ $^ -o $@
 
 #rule to compile LedDriver.c into LedDriver.o
 test/build/objs/LedDriver.o: src/02_LedDriver/LedDriver.c
@@ -92,5 +98,6 @@ test/build/objs/unity_fixture.o: unity/extras/fixture/src/unity_fixture.c
 test/build/Tests.exe: test/build/objs/unity_fixture.o test/build/objs/unity.o \
                       test/build/objs/TestDumbExample.o test/build/objs/DumbExample.o \
                       test/build/objs/TestLedDriver.o test/build/objs/LedDriver.o \
+                      test/build/objs/RuntimeErrorStub.o \
                       test/build/objs/AllTests.o
 	gcc $^ -o $@
