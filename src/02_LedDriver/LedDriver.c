@@ -25,10 +25,29 @@ static void updateHardware( void )
     *ledsAddress = ledsImage;
 }
 
-static BOOL IsLedInOfBounds( int ledNumber )
+static uint16_t convertLedNumberToBit( uint16_t ledNumber )
+{
+    /* The offset (-1) is needed because the LEDs are numbered 1 through 16,
+       so LED 1 is bit 0, and LED 16 is bit 15 */
+    return ( 1 << ( ledNumber - 1 ) );
+}
+
+static BOOL IsLedInOfBounds( uint16_t ledNumber )
 {
     /* return TRUE if LED is within the valid range, return FALSE otherwise */
     return ( ( ledNumber >= FIRST_LED ) && ( ledNumber <= LAST_LED ) );
+}
+
+static void setLedImageBit( uint16_t ledNumber )
+{
+    /* update the LEDs' state */
+    ledsImage |= convertLedNumberToBit( ledNumber );
+}
+
+static void clearLedImageBit( uint16_t ledNumber )
+{
+    /* update the LEDs' state */
+    ledsImage &= ~convertLedNumberToBit( ledNumber );
 }
 
 void LedDriver_Create( uint16_t *address )
@@ -42,20 +61,13 @@ void LedDriver_Create( uint16_t *address )
     updateHardware();            /* set the LEDs' state */
 }
 
-static uint16_t convertLedNumberToBit( int ledNumber )
-{
-    /* The offset (-1) is needed because the LEDs are numbered 1 through 16,
-       so LED 1 is bit 0, and LED 16 is bit 15 */
-    return ( 1 << ( ledNumber - 1 ) );
-}
-
 void LedDriver_TurnOn( uint16_t ledNumber )
 {
     /* only turn on LEDs within the 1-16 range */
     if ( IsLedInOfBounds( ledNumber ) )
     {
         /* update the LEDs' state */
-        ledsImage |= convertLedNumberToBit( ledNumber );
+        setLedImageBit( ledNumber );
 
         /* turn on the specified LED number */
         updateHardware();
@@ -76,7 +88,7 @@ void LedDriver_TurnOff( uint16_t ledNumber )
     if ( IsLedInOfBounds( ledNumber ) )
     {
         /* update the LEDs' state */
-        ledsImage &= ~convertLedNumberToBit( ledNumber );
+        clearLedImageBit( ledNumber );
 
         /* turn off the specified LED number, */
         updateHardware();
