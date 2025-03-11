@@ -68,7 +68,7 @@ test/build/objs/RuntimeErrorStub.o: mocks/RuntimeErrorStub.c
 
 #rule to compile LedDriver.c into LedDriver.o
 test/build/objs/LedDriver.o: src/02_LedDriver/LedDriver.c
-	gcc -c -g -Iinclude/02_LedDriver/ $^ -o $@
+	gcc -c -g -Iinclude/02_LedDriver/ -Iinclude/util/ $^ -o $@
 
 #rule to compile TestLedDriver.c into TestLedDriver.o
 test/build/objs/TestLedDriver.o: test/02_LedDriver/TestLedDriver.c

@@ -205,14 +205,16 @@ TEST( LedDriver, OutOfBoundsProducesRuntimeError )
    LedDriver_TurnOn( -2 );
 
    /* get the last runtime error message and error parameter */
-   errorMessage = RuntimeErrorStub_GetLastError();
+   errorMessage   = RuntimeErrorStub_GetLastError();
    errorParameter = RuntimeErrorStub_GetLastParameter();
 
    /* check the error message is "LED Driver: out-of-bounds LED" */
    TEST_ASSERT_EQUAL_STRING( "LED Driver: out-of-bounds LED", errorMessage );
 
-   /* check the last error parameter is the same as the out-of-bounds LED number (-2) */
-   TEST_ASSERT_EQUAL( -2, errorParameter );
+   /* check the last error parameter is the same as the out-of-bounds LED number (-2).
+      Note: the cast to uint16_t is necessary because LedDriver_TurnOn() receives as an argument a
+            uint16_t data type, so the -2 used above is actually promoted to (uint16_t) -2 */
+   TEST_ASSERT_EQUAL( ( uint16_t ) -2, errorParameter );
 }
 
 TEST_GROUP_RUNNER( LedDriver )

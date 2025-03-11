@@ -8,6 +8,7 @@
  */
 
 #include "LedDriver.h"
+#include "RuntimeError.h"
 
 enum { ALL_LEDS_ON = ~0, ALL_LEDS_OFF = ~ALL_LEDS_ON };
 
@@ -51,6 +52,14 @@ void LedDriver_TurnOn( uint16_t ledNumber )
 
         /* turn on the specified LED number */
         updateHardware();
+    }
+    /* if an attempt is made to turn on an out-of-bounds LED */
+    else
+    {
+        /* produce a runtime error:
+           - the first parameter is the error message
+           - the second parameter is the error paramater */
+        RUNTIME_ERROR( "LED Driver: out-of-bounds LED", ledNumber );
     }
 }
 
