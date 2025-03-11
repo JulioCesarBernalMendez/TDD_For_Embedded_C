@@ -54,7 +54,7 @@ mkdirs:
 #make run: runs Tests.exe
 run:
 	@echo ""
-	./test/build/Tests.exe
+	./test/build/Tests.exe -v
 
 #make clean: deletes Tests.exe and all the object files
 clean:
