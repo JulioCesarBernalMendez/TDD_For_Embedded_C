@@ -104,7 +104,7 @@ void LedDriver_TurnAllOn( void )
     updateHardware();
 }
 
-BOOL LedDriver_IsOn( int ledNumber )
+BOOL LedDriver_IsOn( uint16_t ledNumber )
 {
     /* ledNumber's state */
     BOOL ledOn = FALSE;
@@ -117,4 +117,9 @@ BOOL LedDriver_IsOn( int ledNumber )
     }
 
     return ledOn;
+}
+
+BOOL LedDriver_IsOff( uint16_t ledNumber )
+{
+    return !LedDriver_IsOn( ledNumber );
 }
