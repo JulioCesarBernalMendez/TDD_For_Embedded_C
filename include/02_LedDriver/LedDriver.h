@@ -18,5 +18,6 @@
     void LedDriver_TurnOn( uint16_t ledNumber );
     void LedDriver_TurnOff( uint16_t ledNumber );
     void LedDriver_TurnAllOn( void );
+    BOOL LedDriver_IsOn( int ledNumber );
 
 #endif

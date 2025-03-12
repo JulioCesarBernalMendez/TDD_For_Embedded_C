@@ -103,3 +103,8 @@ void LedDriver_TurnAllOn( void )
     /* turn on all the LEDs */
     updateHardware();
 }
+
+BOOL LedDriver_IsOn( int ledNumber )
+{
+    return ledsImage & ( convertLedNumberToBit( ledNumber ) );
+}

@@ -8,15 +8,21 @@
  * 
  *          LED Driver Tests:
  *          -----------------
- *          - All LEDs are off after the driver is initialized
- *          - A single LED can be turned on
- *          - A single LED can be turned off
- *          - Multiple LEDs can be turned on/off
- *          - Turn on all LEDs
- *          - Turn off all LEDs
- *          - Query LED state
- *          - Check boundary values
- *          - Check out-of-bounds values
+ *          x - All LEDs are off after the driver is initialized
+ *          x - A single LED can be turned on
+ *          x - A single LED can be turned off
+ *          x - Multiple LEDs can be turned on
+ *            - Multiple LEDs can be turned off
+ *          x - Turn on all LEDs
+ *            - Turn off all LEDs
+ *          x - Query LED state
+ *          x - Check boundary values
+ *            - Check out-of-bounds values:
+ *              x - Beyond max breaks nothing
+ *              x - Under min breaks nothing
+ *              x - Runtime error
+ *                - What should really happen?
+ *          x - Hardware interaction
  * 
  * @version 0.1
  * @date    2025-02-21
@@ -223,6 +229,22 @@ IGNORE_TEST( LedDriver, OutOfBoundsToDo )
    /* TODO: what should we do during runtime? */
 }
 
+/* TEST 13 */
+TEST( LedDriver, IsOn )
+{
+   /* *ledsAddress is first initialized to 0 (all LEDs off) due to
+      the calling to LedDriver_Create() before each test's execution */
+
+   /* check LED 11 is not on */
+   TEST_ASSERT_FALSE( LedDriver_IsOn( 11 ) );
+
+   /* turn on LED 11 */
+   LedDriver_TurnOn( 11 );
+
+   /* check LED 11 is on */
+   TEST_ASSERT_TRUE( LedDriver_IsOn( 11 ) );
+}
+
 TEST_GROUP_RUNNER( LedDriver )
 {
    /* TEST 1 */
@@ -260,4 +282,7 @@ TEST_GROUP_RUNNER( LedDriver )
 
    /* TEST 12 */
    RUN_TEST_CASE( LedDriver, OutOfBoundsToDo );
+
+   /* TEST 13 */
+   RUN_TEST_CASE( LedDriver, IsOn );
 }

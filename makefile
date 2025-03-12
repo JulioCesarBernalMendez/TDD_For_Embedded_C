@@ -28,33 +28,34 @@
 #	TARGET_EXTENSION=out
 #endif
 
-#make test: executes the specified rules for compilation and linking
-test: mkdirs \
-      test/build/objs/unity.o test/build/objs/unity_fixture.o \
-      test/build/objs/DumbExample.o test/build/objs/TestDumbExample.o \
-      test/build/objs/LedDriver.o test/build/objs/TestLedDriver.o \
-      test/build/objs/RuntimeErrorStub.o \
-      test/build/objs/AllTests.o \
-      test/build/Tests.exe run
+#make test: executes the specified rules for compilation/linking and runs the executable
+test: objects \
+      test/build/Tests.exe
+	@echo ""
+	./test/build/Tests.exe
 
-#make debug: executes the specified rules for compilation and linking, plus runs the executable in gdb debug mode
-debug: mkdirs \
-       test/build/objs/unity.o test/build/objs/unity_fixture.o \
-       test/build/objs/DumbExample.o test/build/objs/TestDumbExample.o \
-       test/build/objs/LedDriver.o test/build/objs/TestLedDriver.o \
-       test/build/objs/RuntimeErrorStub.o \
-       test/build/objs/AllTests.o \
+#make test_verbose: executes the specified rules for compilation/linking and runs the executable in verbose mode
+test_verbose: objects\
+              test/build/Tests.exe
+	@echo ""
+	./test/build/Tests.exe -v
+
+#make debug: executes the specified rules for compilation/linking and runs the executable in gdb debug mode
+debug: objects \
        test/build/Tests.exe
 	gdb ./test/build/Tests.exe
+
+#make objects: executes the specified rules for the directory creation and compilation
+objects: mkdirs \
+         test/build/objs/unity.o test/build/objs/unity_fixture.o \
+         test/build/objs/DumbExample.o test/build/objs/TestDumbExample.o \
+         test/build/objs/LedDriver.o test/build/objs/TestLedDriver.o \
+         test/build/objs/RuntimeErrorStub.o \
+         test/build/objs/AllTests.o
 
 #make mkdirs: creates the directory test/build/objs/ used to store the compiled .o files
 mkdirs:
 	mkdir -p test/build/objs/
-
-#make run: runs Tests.exe
-run:
-	@echo ""
-	./test/build/Tests.exe -v
 
 #make clean: deletes Tests.exe and all the object files
 clean:
