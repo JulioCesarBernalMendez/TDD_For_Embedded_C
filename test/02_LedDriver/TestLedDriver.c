@@ -245,6 +245,20 @@ TEST( LedDriver, IsOn )
    TEST_ASSERT_TRUE( LedDriver_IsOn( 11 ) );
 }
 
+/* TEST 14 */ 
+TEST( LedDriver, OutOfBoundsLedsAreAlwaysOff )
+{
+   /* *ledsAddress is first initialized to 0 (all LEDs off) due to
+      the calling to LedDriver_Create() before each test's execution */
+
+   /* turn on all the 16 LEDs */
+   LedDriver_TurnAllOn();
+   
+   /* check both (out-of-bounds) LEDs 0 and 17 are not on */
+   TEST_ASSERT_FALSE( LedDriver_IsOn( 0 ) );
+   TEST_ASSERT_FALSE( LedDriver_IsOn( 17 ) );
+}
+
 TEST_GROUP_RUNNER( LedDriver )
 {
    /* TEST 1 */
@@ -285,4 +299,7 @@ TEST_GROUP_RUNNER( LedDriver )
 
    /* TEST 13 */
    RUN_TEST_CASE( LedDriver, IsOn );
+
+   /* TEST 14 */
+   RUN_TEST_CASE( LedDriver, OutOfBoundsLedsAreAlwaysOff );
 }

@@ -12,6 +12,9 @@
 
     #include <stdint.h>
 
+    #define TRUE     1
+    #define FALSE    0
+    
     typedef int BOOL;
 
     void LedDriver_Create( uint16_t *virtualLeds );

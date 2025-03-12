@@ -106,5 +106,15 @@ void LedDriver_TurnAllOn( void )
 
 BOOL LedDriver_IsOn( int ledNumber )
 {
-    return ledsImage & ( convertLedNumberToBit( ledNumber ) );
+    /* ledNumber's state */
+    BOOL ledOn = FALSE;
+
+    /* only evaluate for LEDs within the 1-16 range */
+    if ( IsLedInOfBounds( ledNumber ) )
+    {
+        /* get LedNumber's state */
+        ledOn = ledsImage & ( convertLedNumberToBit( ledNumber ) );
+    }
+
+    return ledOn;
 }
