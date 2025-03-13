@@ -11,13 +11,11 @@
  *          x - All LEDs are off after the driver is initialized
  *          x - A single LED can be turned on
  *          x - A single LED can be turned off
- *          x - Multiple LEDs can be turned on
- *            - Multiple LEDs can be turned off
- *          x - Turn on all LEDs
- *            - Turn off all LEDs
+ *          x - Multiple LEDs can be turned on/off
+ *          x - Turn on/off all LEDs
  *          x - Query LED state
  *          x - Check boundary values
- *            - Check out-of-bounds values:
+ *          x - Check out-of-bounds values:
  *              x - Beyond max breaks nothing
  *              x - Under min breaks nothing
  *              x - Runtime error
@@ -85,29 +83,6 @@ TEST( LedDriver, TurnOnLedOne )
 }
 
 /* TEST 3 */
-TEST( LedDriver, TurnOnMultipleLeds )
-{
-   /* turn on both LEDs 9 and 8 */
-   LedDriver_TurnOn( 8 );
-   LedDriver_TurnOn( 9 );
-
-   /* check both LEDs 9 and 8 are on.
-      The LEDs are numbered 1 through 16, so bit 8 is LED 9
-      and bit 7 is LED 8, which equals 0x180 */
-   TEST_ASSERT_EQUAL_HEX16( 0x180, virtualLeds );
-}
-
-/* TEST 4 */
-TEST( LedDriver, AllOn )
-{
-   /* turn on all the 16 LEDs */
-   LedDriver_TurnAllOn();
-
-   /* check all LEDs are on */
-   TEST_ASSERT_EQUAL_HEX( 0xffff, virtualLeds );
-}
-
-/* TEST 5 */
 TEST( LedDriver, TurnOffLedOne )
 {
    /* turn the first LED (LED 1) on */
@@ -121,7 +96,7 @@ TEST( LedDriver, TurnOffLedOne )
    TEST_ASSERT_EQUAL_HEX16( 0, virtualLeds );
 }
 
-/* TEST 6 */
+/* TEST 4 */
 TEST( LedDriver, TurnOffAnyLed )
 {
    /* turn on all LEDs */
@@ -134,7 +109,95 @@ TEST( LedDriver, TurnOffAnyLed )
    TEST_ASSERT_EQUAL_HEX16( 0xff7f, virtualLeds );
 }
 
-/* TEST 7 */ 
+/* TEST 5 */
+TEST( LedDriver, TurnOnMultipleLeds )
+{
+   /* turn on both LEDs 9 and 8 */
+   LedDriver_TurnOn( 8 );
+   LedDriver_TurnOn( 9 );
+
+   /* check both LEDs 9 and 8 are on.
+      The LEDs are numbered 1 through 16, so bit 8 is LED 9
+      and bit 7 is LED 8, which equals 0x180 */
+   TEST_ASSERT_EQUAL_HEX16( 0x180, virtualLeds );
+}
+
+/* TEST 6 */
+TEST( LedDriver, TurnOffMultipleLeds )
+{
+   /* virtualLeds is first initialized to 0 (all LEDs off) due to
+      the calling to LedDriver_Create() before each test's execution */
+
+   /* turn on all the 16 LEDs */
+   LedDriver_TurnAllOn();
+   
+   /* turn off both LEDs 8 and 9 */
+   LedDriver_TurnOff( 8 );
+   LedDriver_TurnOff( 9 );
+
+   /* check only LEDs 9 and 8 are off () */
+   TEST_ASSERT_EQUAL_HEX16( ~0x180 & 0xFFFF, virtualLeds );
+}
+
+/* TEST 7 */
+TEST( LedDriver, AllOn )
+{
+   /* turn on all the 16 LEDs */
+   LedDriver_TurnAllOn();
+
+   /* check all LEDs are on */
+   TEST_ASSERT_EQUAL_HEX( 0xffff, virtualLeds );
+}
+
+/* TEST 8 */
+TEST( LedDriver, AllOff )
+{
+   /* virtualLeds is first initialized to 0 (all LEDs off) due to
+      the calling to LedDriver_Create() before each test's execution */
+
+   /* turn on all the 16 LEDs */
+   LedDriver_TurnAllOn();
+
+   /* turn on all the 16 LEDs */
+   LedDriver_TurnAllOff();
+
+   /* check all LEDs are off */
+   TEST_ASSERT_EQUAL_HEX16( 0, virtualLeds );
+}
+
+/* TEST 9 */
+TEST( LedDriver, IsOn )
+{
+   /* *ledsAddress is first initialized to 0 (all LEDs off) due to
+      the calling to LedDriver_Create() before each test's execution */
+
+   /* check LED 11 is not on */
+   TEST_ASSERT_FALSE( LedDriver_IsOn( 11 ) );
+
+   /* turn on LED 11 */
+   LedDriver_TurnOn( 11 );
+
+   /* check LED 11 is on */
+   TEST_ASSERT_TRUE( LedDriver_IsOn( 11 ) );
+}
+
+/* TEST 10 */ 
+TEST( LedDriver, IsOff )
+{
+   /* *ledsAddress is first initialized to 0 (all LEDs off) due to
+      the calling to LedDriver_Create() before each test's execution */
+      
+   /* check LED 12 is off */
+   TEST_ASSERT_TRUE( LedDriver_IsOff( 12 ) );
+
+   /* turn on LED 12 */
+   LedDriver_TurnOn( 12 );
+
+   /* check LED 12 is not off */
+   TEST_ASSERT_FALSE( LedDriver_IsOff( 12 ) );
+}
+
+/* TEST 11 */ 
 TEST( LedDriver, LedMemoryIsNotReadable )
 {
    /* virtualLeds is first initialized to 0 (all LEDs off) due to
@@ -153,7 +216,7 @@ TEST( LedDriver, LedMemoryIsNotReadable )
    TEST_ASSERT_EQUAL_HEX16( 0x80, virtualLeds );
 }
 
-/* TEST 8 */
+/* TEST 12 */
 TEST( LedDriver, UpperAndLowerBounds )
 {
    /* this test checks the upper and lower bounds of the legal LED values */
@@ -166,7 +229,7 @@ TEST( LedDriver, UpperAndLowerBounds )
    TEST_ASSERT_EQUAL_HEX16( 0x8001, virtualLeds );
 }
 
-/* TEST 9 */
+/* TEST 13 */
 TEST( LedDriver, OutOfBoundsTurnOnDoesNoHarm )
 {
    /* this test exercises the LedDriver with some fence-post values
@@ -181,7 +244,7 @@ TEST( LedDriver, OutOfBoundsTurnOnDoesNoHarm )
    TEST_ASSERT_EQUAL_HEX16( 0, virtualLeds );
 }
 
-/* TEST 10 */
+/* TEST 14 */
 TEST( LedDriver, OutOfBoundsTurnOffDoesNoHarm )
 {
    /* this test exercises the LedDriver with some fence-post values
@@ -201,7 +264,7 @@ TEST( LedDriver, OutOfBoundsTurnOffDoesNoHarm )
    TEST_ASSERT_EQUAL_HEX16( 0xffff, virtualLeds );
 }
 
-/* TEST 11 */
+/* TEST 15 */
 TEST( LedDriver, OutOfBoundsProducesRuntimeError )
 {
    const char *errorMessage;
@@ -223,45 +286,7 @@ TEST( LedDriver, OutOfBoundsProducesRuntimeError )
    TEST_ASSERT_EQUAL( ( uint16_t ) -2, errorParameter );
 }
 
-/* TEST 12 */
-IGNORE_TEST( LedDriver, OutOfBoundsToDo )
-{
-   /* TODO: what should we do during runtime? */
-}
-
-/* TEST 13 */
-TEST( LedDriver, IsOn )
-{
-   /* *ledsAddress is first initialized to 0 (all LEDs off) due to
-      the calling to LedDriver_Create() before each test's execution */
-
-   /* check LED 11 is not on */
-   TEST_ASSERT_FALSE( LedDriver_IsOn( 11 ) );
-
-   /* turn on LED 11 */
-   LedDriver_TurnOn( 11 );
-
-   /* check LED 11 is on */
-   TEST_ASSERT_TRUE( LedDriver_IsOn( 11 ) );
-}
-
-/* TEST 14 */ 
-TEST( LedDriver, IsOff )
-{
-   /* *ledsAddress is first initialized to 0 (all LEDs off) due to
-      the calling to LedDriver_Create() before each test's execution */
-      
-   /* check LED 12 is off */
-   TEST_ASSERT_TRUE( LedDriver_IsOff( 12 ) );
-
-   /* turn on LED 12 */
-   LedDriver_TurnOn( 12 );
-
-   /* check LED 12 is not off */
-   TEST_ASSERT_FALSE( LedDriver_IsOff( 12 ) );
-}
-
-/* TEST 15 */ 
+/* TEST 16 */ 
 TEST( LedDriver, OutOfBoundsLedsAreAlwaysOff )
 {
    /* *ledsAddress is first initialized to 0 (all LEDs off) due to
@@ -279,37 +304,10 @@ TEST( LedDriver, OutOfBoundsLedsAreAlwaysOff )
    TEST_ASSERT_TRUE( LedDriver_IsOff( 17 ) );
 }
 
-/* TEST 16 */
-TEST( LedDriver, TurnOffMultipleLeds )
-{
-   /* virtualLeds is first initialized to 0 (all LEDs off) due to
-      the calling to LedDriver_Create() before each test's execution */
-
-   /* turn on all the 16 LEDs */
-   LedDriver_TurnAllOn();
-   
-   /* turn off both LEDs 8 and 9 */
-   LedDriver_TurnOff( 8 );
-   LedDriver_TurnOff( 9 );
-
-   /* check only LEDs 9 and 8 are off () */
-   TEST_ASSERT_EQUAL_HEX16( ~0x180 & 0xFFFF, virtualLeds );
-}
-
 /* TEST 17 */
-TEST( LedDriver, AllOff )
+IGNORE_TEST( LedDriver, OutOfBoundsToDo )
 {
-   /* virtualLeds is first initialized to 0 (all LEDs off) due to
-      the calling to LedDriver_Create() before each test's execution */
-
-   /* turn on all the 16 LEDs */
-   LedDriver_TurnAllOn();
-
-   /* turn on all the 16 LEDs */
-   LedDriver_TurnAllOff();
-
-   /* check all LEDs are off */
-   TEST_ASSERT_EQUAL_HEX16( 0, virtualLeds );
+   /* TODO: what should we do during runtime? */
 }
 
 TEST_GROUP_RUNNER( LedDriver )
@@ -321,47 +319,47 @@ TEST_GROUP_RUNNER( LedDriver )
    RUN_TEST_CASE( LedDriver, TurnOnLedOne );
 
    /* TEST 3 */
-   RUN_TEST_CASE( LedDriver, TurnOnMultipleLeds );
-
-   /* TEST 4 */
-   RUN_TEST_CASE( LedDriver, AllOn );
-
-   /* TEST 5 */
    RUN_TEST_CASE( LedDriver, TurnOffLedOne );
 
-   /* TEST 6 */
+   /* TEST 4 */
    RUN_TEST_CASE( LedDriver, TurnOffAnyLed );
 
-   /* TEST 7 */
-   RUN_TEST_CASE( LedDriver, LedMemoryIsNotReadable );
+   /* TEST 5 */
+   RUN_TEST_CASE( LedDriver, TurnOnMultipleLeds );
 
-   /* TEST 8 */
-   RUN_TEST_CASE( LedDriver, UpperAndLowerBounds );
-
-   /* TEST 9 */
-   RUN_TEST_CASE( LedDriver, OutOfBoundsTurnOnDoesNoHarm );
-
-   /* TEST 10 */
-   RUN_TEST_CASE( LedDriver, OutOfBoundsTurnOffDoesNoHarm );
-
-   /* TEST 11 */
-   RUN_TEST_CASE( LedDriver, OutOfBoundsProducesRuntimeError );
-
-   /* TEST 12 */
-   RUN_TEST_CASE( LedDriver, OutOfBoundsToDo );
-
-   /* TEST 13 */
-   RUN_TEST_CASE( LedDriver, IsOn );
-
-   /* TEST 14 */
-   RUN_TEST_CASE( LedDriver, IsOff );
-
-   /* TEST 15 */
-   RUN_TEST_CASE( LedDriver, OutOfBoundsLedsAreAlwaysOff );
-
-   /* TEST 16 */
+   /* TEST 6 */
    RUN_TEST_CASE( LedDriver, TurnOffMultipleLeds );
 
-   /* TEST 17 */
+   /* TEST 7 */
+   RUN_TEST_CASE( LedDriver, AllOn );
+
+   /* TEST 8 */
    RUN_TEST_CASE( LedDriver, AllOff );
+
+   /* TEST 9 */
+   RUN_TEST_CASE( LedDriver, IsOn );
+
+   /* TEST 10 */
+   RUN_TEST_CASE( LedDriver, IsOff );
+
+   /* TEST 11 */
+   RUN_TEST_CASE( LedDriver, LedMemoryIsNotReadable );
+
+   /* TEST 12 */
+   RUN_TEST_CASE( LedDriver, UpperAndLowerBounds );
+
+   /* TEST 13 */
+   RUN_TEST_CASE( LedDriver, OutOfBoundsTurnOnDoesNoHarm );
+
+   /* TEST 14 */
+   RUN_TEST_CASE( LedDriver, OutOfBoundsTurnOffDoesNoHarm );
+
+   /* TEST 15 */
+   RUN_TEST_CASE( LedDriver, OutOfBoundsProducesRuntimeError );
+
+   /* TEST 16 */
+   RUN_TEST_CASE( LedDriver, OutOfBoundsLedsAreAlwaysOff );
+
+   /* TEST 17 */
+   RUN_TEST_CASE( LedDriver, OutOfBoundsToDo );
 }
