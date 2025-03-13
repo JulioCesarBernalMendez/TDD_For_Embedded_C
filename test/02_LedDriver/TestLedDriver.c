@@ -279,6 +279,23 @@ TEST( LedDriver, OutOfBoundsLedsAreAlwaysOff )
    TEST_ASSERT_TRUE( LedDriver_IsOff( 17 ) );
 }
 
+/* TEST 16 */
+TEST( LedDriver, TurnOffMultipleLeds )
+{
+   /* virtualLeds is first initialized to 0 (all LEDs off) due to
+      the calling to LedDriver_Create() before each test's execution */
+
+   /* turn on all the 16 LEDs */
+   LedDriver_TurnAllOn();
+   
+   /* turn off both LEDs 8 and 9 */
+   LedDriver_TurnOff( 8 );
+   LedDriver_TurnOff( 9 );
+
+   /* check only LEDs 9 and 8 are off () */
+   TEST_ASSERT_EQUAL_HEX16( ~0x180 & 0xFFFF, virtualLeds );
+}
+
 TEST_GROUP_RUNNER( LedDriver )
 {
    /* TEST 1 */
@@ -325,4 +342,7 @@ TEST_GROUP_RUNNER( LedDriver )
 
    /* TEST 15 */
    RUN_TEST_CASE( LedDriver, OutOfBoundsLedsAreAlwaysOff );
+
+   /* TEST 16 */
+   RUN_TEST_CASE( LedDriver, TurnOffMultipleLeds );
 }
