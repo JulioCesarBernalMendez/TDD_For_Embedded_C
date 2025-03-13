@@ -296,6 +296,22 @@ TEST( LedDriver, TurnOffMultipleLeds )
    TEST_ASSERT_EQUAL_HEX16( ~0x180 & 0xFFFF, virtualLeds );
 }
 
+/* TEST 17 */
+TEST( LedDriver, AllOff )
+{
+   /* virtualLeds is first initialized to 0 (all LEDs off) due to
+      the calling to LedDriver_Create() before each test's execution */
+
+   /* turn on all the 16 LEDs */
+   LedDriver_TurnAllOn();
+
+   /* turn on all the 16 LEDs */
+   LedDriver_TurnAllOff();
+
+   /* check all LEDs are off */
+   TEST_ASSERT_EQUAL_HEX16( 0, virtualLeds );
+}
+
 TEST_GROUP_RUNNER( LedDriver )
 {
    /* TEST 1 */
@@ -345,4 +361,7 @@ TEST_GROUP_RUNNER( LedDriver )
 
    /* TEST 16 */
    RUN_TEST_CASE( LedDriver, TurnOffMultipleLeds );
+
+   /* TEST 17 */
+   RUN_TEST_CASE( LedDriver, AllOff );
 }

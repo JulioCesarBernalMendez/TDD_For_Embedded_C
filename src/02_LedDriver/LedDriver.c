@@ -104,6 +104,15 @@ void LedDriver_TurnAllOn( void )
     updateHardware();
 }
 
+void LedDriver_TurnAllOff( void )
+{
+    /* store the LEDs' state */
+    ledsImage = ALL_LEDS_OFF;
+
+    /* turn on all the LEDs */
+    updateHardware();
+}
+
 BOOL LedDriver_IsOn( uint16_t ledNumber )
 {
     /* ledNumber's state */
