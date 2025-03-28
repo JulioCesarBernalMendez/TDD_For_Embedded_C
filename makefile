@@ -2,10 +2,10 @@
 # Author:  Julio Cesar Bernal Mendez
 # Brief:   Simple makefile that can be run on Windows using a git bash terminal.
 #
-#          It compiles and links the specified object files into one executable (Tests.exe)
+#          It compiles and links the specified object files into one executable (UnityTests.exe)
 #          which is also executed automatically showing all the results of the test group runners
-#          called from the AllTests.c main() function. This can be done by just typing "make" in your shell
-#          (see targets below).
+#          called from the AllUnityTests.c main() function. This can be done by just typing "make" in your shell
+#          (see that and other targets below).
 #
 #          A much better makefile explanation can be found here: https://www.throwtheswitch.org/build/make
 #
@@ -28,22 +28,22 @@
 #	TARGET_EXTENSION=out
 #endif
 
-#make test: executes the specified rules for compilation/linking and runs the executable
-test: objects \
-      test_unity/build/Tests.exe
+#make test_unity: executes the specified rules for compilation/linking and runs the executable
+test_unity: objects \
+      test_unity/build/UnityTests.exe
 	@echo ""
-	./test_unity/build/Tests.exe
+	./test_unity/build/UnityTests.exe
 
-#make test_verbose: executes the specified rules for compilation/linking and runs the executable in verbose mode
-test_verbose: objects\
-              test_unity/build/Tests.exe
+#make test_unity_verbose: executes the specified rules for compilation/linking and runs the executable in verbose mode
+test_unity_verbose: objects\
+              test_unity/build/UnityTests.exe
 	@echo ""
-	./test_unity/build/Tests.exe -v
+	./test_unity/build/UnityTests.exe -v
 
 #make debug: executes the specified rules for compilation/linking and runs the executable in gdb debug mode
 debug: objects \
-       test_unity/build/Tests.exe
-	gdb ./test_unity/build/Tests.exe
+       test_unity/build/UnityTests.exe
+	gdb ./test_unity/build/UnityTests.exe
 
 #make objects: executes the specified rules for the directory creation and compilation
 objects: mkdirs \
@@ -51,15 +51,15 @@ objects: mkdirs \
          test_unity/build/objs/DumbExample.o test_unity/build/objs/TestDumbExample.o \
          test_unity/build/objs/LedDriver.o test_unity/build/objs/TestLedDriver.o \
          test_unity/build/objs/RuntimeErrorStub.o \
-         test_unity/build/objs/AllTests.o
+         test_unity/build/objs/AllUnityTests.o
 
 #make mkdirs: creates the directory test_unity/build/objs/ used to store the compiled .o files
 mkdirs:
 	mkdir -p test_unity/build/objs/
 
-#make clean: deletes Tests.exe and all the object files
+#make clean: deletes UnityTests.exe and all the object files
 clean:
-#	rm -f test_unity/build/Tests.exe test_unity/build/objs/*.o
+#	rm -f test_unity/build/UnityTests.exe test_unity/build/objs/*.o
 	rm -rf test_unity/build/
 
 
@@ -83,8 +83,8 @@ test_unity/build/objs/DumbExample.o: src/01_DumbExample/DumbExample.c
 test_unity/build/objs/TestDumbExample.o: test_unity/01_DumbExample/TestDumbExample.c
 	gcc -c -g -Iunity/extras/fixture/src/ -Iunity/src/ -Iunity/extras/memory/src/ -Iinclude/01_DumbExample/ $^ -o $@
 
-#rule to compile AllTests.c into AllTests.o
-test_unity/build/objs/AllTests.o: test_unity/AllTests.c
+#rule to compile AllUnityTests.c into AllUnityTests.o
+test_unity/build/objs/AllUnityTests.o: test_unity/AllUnityTests.c
 	gcc -c -g -Iunity/extras/fixture/src/ -Iunity/src/ -Iunity/extras/memory/src/ $^ -o $@
 
 #rule to compile unity.c into unity.o
@@ -95,10 +95,10 @@ test_unity/build/objs/unity.o: unity/src/unity.c
 test_unity/build/objs/unity_fixture.o: unity/extras/fixture/src/unity_fixture.c
 	gcc -c -g -Iunity/extras/fixture/src/ -Iunity/src/ -Iunity/extras/memory/src/ $^ -o $@
 
-#rule to link the specified .o files into Tests.exe
-test_unity/build/Tests.exe: test_unity/build/objs/unity_fixture.o test_unity/build/objs/unity.o \
+#rule to link the specified .o files into UnityTests.exe
+test_unity/build/UnityTests.exe: test_unity/build/objs/unity_fixture.o test_unity/build/objs/unity.o \
                       test_unity/build/objs/TestDumbExample.o test_unity/build/objs/DumbExample.o \
                       test_unity/build/objs/TestLedDriver.o test_unity/build/objs/LedDriver.o \
                       test_unity/build/objs/RuntimeErrorStub.o \
-                      test_unity/build/objs/AllTests.o
+                      test_unity/build/objs/AllUnityTests.o
 	gcc $^ -o $@

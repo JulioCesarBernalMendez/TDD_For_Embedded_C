@@ -1,5 +1,5 @@
 /**
- * @file    AllTests.c
+ * @file    AllUnityTests.c
  * @author  Julio Cesar Bernal Mendez
  * @brief   Source file which contains main() and runs all the test group runners specified within RunAllTests().
  * 
