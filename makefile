@@ -28,40 +28,43 @@
 #	TARGET_EXTENSION=out
 #endif
 
-#make test_unity: executes the specified rules for compilation/linking and runs the executable
-test_unity: objects \
-      test_unity/build/UnityTests.exe
+####################################### Unity make rules #######################################
+
+#make test_unity: executes the specified rules for unity compilation/linking and runs the executable
+test_unity: objects_unity \
+            test_unity/build/UnityTests.exe
 	@echo ""
 	./test_unity/build/UnityTests.exe
 
-#make test_unity_verbose: executes the specified rules for compilation/linking and runs the executable in verbose mode
-test_unity_verbose: objects\
-              test_unity/build/UnityTests.exe
+#make test_unity_verbose: executes the specified rules for unity compilation/linking and runs the executable in verbose mode
+test_unity_verbose: objects_unity \
+                    test_unity/build/UnityTests.exe
 	@echo ""
 	./test_unity/build/UnityTests.exe -v
 
-#make debug: executes the specified rules for compilation/linking and runs the executable in gdb debug mode
-debug: objects \
-       test_unity/build/UnityTests.exe
+#make debug_unity: executes the specified rules for unity compilation/linking and runs the executable in gdb debug mode
+debug_unity: objects_unity \
+             test_unity/build/UnityTests.exe
 	gdb ./test_unity/build/UnityTests.exe
 
-#make objects: executes the specified rules for the directory creation and compilation
-objects: mkdirs \
-         test_unity/build/objs/unity.o test_unity/build/objs/unity_fixture.o \
-         test_unity/build/objs/DumbExample.o test_unity/build/objs/TestDumbExample.o \
-         test_unity/build/objs/LedDriver.o test_unity/build/objs/TestLedDriver.o \
-         test_unity/build/objs/RuntimeErrorStub.o \
-         test_unity/build/objs/AllUnityTests.o
+#make objects_unity: executes the specified rules for the directory creation and compilation used for unity testing
+objects_unity: mkdirs_unity \
+               test_unity/build/objs/unity.o test_unity/build/objs/unity_fixture.o \
+               test_unity/build/objs/DumbExample.o test_unity/build/objs/TestDumbExample.o \
+               test_unity/build/objs/LedDriver.o test_unity/build/objs/TestLedDriver.o \
+               test_unity/build/objs/RuntimeErrorStub.o \
+               test_unity/build/objs/AllUnityTests.o
 
-#make mkdirs: creates the directory test_unity/build/objs/ used to store the compiled .o files
-mkdirs:
+#make mkdirs_unity: creates the directory test_unity/build/objs/ used to store the compiled .o files used for unity testing
+mkdirs_unity:
 	mkdir -p test_unity/build/objs/
 
-#make clean: deletes UnityTests.exe and all the object files
-clean:
+#make clean_unity: deletes UnityTests.exe and all the object files used for unity testing
+clean_unity:
 #	rm -f test_unity/build/UnityTests.exe test_unity/build/objs/*.o
 	rm -rf test_unity/build/
 
+####################################### Unity compilation and linking #######################################
 
 #rule to compile RuntimeErrorStub.c into RuntimeErrorStub.o
 test_unity/build/objs/RuntimeErrorStub.o: mocks/RuntimeErrorStub.c
@@ -97,8 +100,8 @@ test_unity/build/objs/unity_fixture.o: unity/extras/fixture/src/unity_fixture.c
 
 #rule to link the specified .o files into UnityTests.exe
 test_unity/build/UnityTests.exe: test_unity/build/objs/unity_fixture.o test_unity/build/objs/unity.o \
-                      test_unity/build/objs/TestDumbExample.o test_unity/build/objs/DumbExample.o \
-                      test_unity/build/objs/TestLedDriver.o test_unity/build/objs/LedDriver.o \
-                      test_unity/build/objs/RuntimeErrorStub.o \
-                      test_unity/build/objs/AllUnityTests.o
+                                 test_unity/build/objs/TestDumbExample.o test_unity/build/objs/DumbExample.o \
+                                 test_unity/build/objs/TestLedDriver.o test_unity/build/objs/LedDriver.o \
+                                 test_unity/build/objs/RuntimeErrorStub.o \
+                                 test_unity/build/objs/AllUnityTests.o
 	gcc $^ -o $@
