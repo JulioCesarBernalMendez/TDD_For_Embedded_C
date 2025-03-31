@@ -7,7 +7,7 @@
  * @date    2025-03-28
  */
 
-#include "../cpputest/include/CppUTest/CommandLineTestRunner.h"
+#include "CommandLineTestRunner.h"
 
 int main( int argc, char **argv )
 {

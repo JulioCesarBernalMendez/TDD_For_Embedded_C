@@ -10,11 +10,11 @@
 extern "C"
 {
     /* includes for things with C linkage */
-    #include "../../include/03_DummyDriver/DummyDriver.h"
+    #include "DummyDriver.h"
 }
 
 /* includes for things with C++ linkage */
-#include "../../cpputest/include/CppUTest/TestHarness.h"
+#include "TestHarness.h"
 
 TEST_GROUP( DummyDriver )
 {

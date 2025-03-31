@@ -7,7 +7,7 @@
  * @date    2025-03-28
  */
 
-#include "../../include/03_DummyDriver/DummyDriver.h"
+#include "DummyDriver.h"
 
 int32_t AddTwoBytes( int16_t a, int16_t b )
 {

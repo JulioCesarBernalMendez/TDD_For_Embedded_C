@@ -30,24 +30,24 @@
 
 ####################################### Unity make rules #######################################
 
-#make test_unity: executes the specified rules for unity compilation/linking and runs the executable
+#make test_unity: executes the specified rules for Unity compilation/linking and runs the executable
 test_unity: objects_unity \
             test_unity/build/UnityTests.exe
 	@echo ""
 	./test_unity/build/UnityTests.exe
 
-#make test_unity_verbose: executes the specified rules for unity compilation/linking and runs the executable in verbose mode
+#make test_unity_verbose: executes the specified rules for Unity compilation/linking and runs the executable in verbose mode
 test_unity_verbose: objects_unity \
                     test_unity/build/UnityTests.exe
 	@echo ""
 	./test_unity/build/UnityTests.exe -v
 
-#make debug_unity: executes the specified rules for unity compilation/linking and runs the executable in gdb debug mode
+#make debug_unity: executes the specified rules for Unity compilation/linking and runs the executable in gdb debug mode
 debug_unity: objects_unity \
              test_unity/build/UnityTests.exe
 	gdb ./test_unity/build/UnityTests.exe
 
-#make objects_unity: executes the specified rules for the directory creation and compilation used for unity testing
+#make objects_unity: executes the specified rules for the directory creation and compilation used for Unity testing
 objects_unity: mkdirs_unity \
                test_unity/build/objs/unity.o test_unity/build/objs/unity_fixture.o \
                test_unity/build/objs/DumbExample.o test_unity/build/objs/TestDumbExample.o \
@@ -55,11 +55,11 @@ objects_unity: mkdirs_unity \
                test_unity/build/objs/RuntimeErrorStub.o \
                test_unity/build/objs/AllUnityTests.o
 
-#make mkdirs_unity: creates the directory test_unity/build/objs/ used to store the compiled .o files used for unity testing
+#make mkdirs_unity: creates the directory test_unity/build/objs/ used to store the compiled .o files used for Unity testing
 mkdirs_unity:
 	mkdir -p test_unity/build/objs/
 
-#make clean_unity: deletes UnityTests.exe and all the object files used for unity testing
+#make clean_unity: deletes UnityTests.exe and all the object files used for Unity testing
 clean_unity:
 #	rm -f test_unity/build/UnityTests.exe test_unity/build/objs/*.o
 	rm -rf test_unity/build/
@@ -105,3 +105,49 @@ test_unity/build/UnityTests.exe: test_unity/build/objs/unity_fixture.o test_unit
                                  test_unity/build/objs/RuntimeErrorStub.o \
                                  test_unity/build/objs/AllUnityTests.o
 	gcc $^ -o $@
+
+####################################### CppUTest make rules #######################################
+
+#make test_cpputest: executes the specified rules for CppUTest compilation/linking and runs the executable
+test_cpputest: objects_cpputest \
+               test_cpputest/build/CppUTestTests.exe
+	@echo ""
+	./test_cpputest/build/CppUTestTests.exe
+
+#make debug_cpputest: executes the specified rules for CppUTest compilation/linking and runs the executable in gdb debug mode
+debug_cpputest: objects_cpputest \
+                test_cpputest/build/CppUTestTests.exe
+	gdb ./test_cpputest/build/CppUTestTests.exe
+
+#make objects_cpputest: executes the specified rules for the directory creation and compilation used for CppUTest testing
+objects_cpputest: mkdirs_cpputest \
+                  test_cpputest/build/objs/DummyDriver.o test_cpputest/build/objs/TestDummyDriver.o \
+                  test_cpputest/build/objs/AllCppUTestTests.o
+
+#make mkdirs_cpputest: creates the directory test_cpputest/build/objs/ used to store the compiled .o files used for CppUTest testing
+mkdirs_cpputest:
+	mkdir -p test_cpputest/build/objs/
+
+#make clean_cpputest: deletes CppUTestTests.exe and all the object files used for CppUTest testing
+clean_cpputest:
+	rm -rf test_cpputest/build/
+
+####################################### CppUTest compilation and linking #######################################
+
+#rule to compile DummyDriver.c into DummyDriver.o
+test_cpputest/build/objs/DummyDriver.o: src/03_DummyDriver/DummyDriver.c
+	gcc -c -g -Iinclude/03_DummyDriver/ $^ -o $@
+
+#rule to compile TestDummyDriver.cpp into TestDummyDriver.o
+test_cpputest/build/objs/TestDummyDriver.o: test_cpputest/03_DummyDriver/TestDummyDriver.cpp
+	g++ -c -g -Iinclude/03_DummyDriver/ -Icpputest/include/CppUTest/ $^ -o $@
+
+#rule to compile AllCppUTestTests.cpp into AllCppUTestTests.o
+test_cpputest/build/objs/AllCppUTestTests.o: test_cpputest/AllCppUTestTests.cpp
+	g++ -c -g -Icpputest/include/CppUTest/ $^ -o $@
+
+#rule to link the specified .o files into CppUTestTests.exe
+test_cpputest/build/CppUTestTests.exe: test_cpputest/build/objs/DummyDriver.o \
+                                       test_cpputest/build/objs/TestDummyDriver.o \
+                                       test_cpputest/build/objs/AllCppUTestTests.o
+	g++ $^ -Lcpputest/lib -lCppUTest -o $@
