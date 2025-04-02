@@ -144,12 +144,12 @@ test_cpputest/build/objs/TestDummyDriver.o: test_cpputest/03_DummyDriver/TestDum
 	g++ -c -g -Iinclude/03_DummyDriver/ -Icpputest/include/CppUTest/ $^ -o $@
 
 #rule to compile LightControllerSpy.c into LightControllerSpy.o
-test_cpputest/build/objs/LightControllerSpy.o: test_cpputest/04_LightScheduler/LightControllerSpy.c
-	gcc -c -g -Itest_cpputest/04_LightScheduler/ -Iinclude/04_LightScheduler/ $^ -o $@
+test_cpputest/build/objs/LightControllerSpy.o: test_cpputest/04_LightScheduler/LightControllerSpy/LightControllerSpy.c
+	gcc -c -g -Itest_cpputest/04_LightScheduler/LightControllerSpy/ -Iinclude/04_LightScheduler/LightController/ $^ -o $@
 
 #rule to compile LightSchedulerTest.ccp into LightSchedulerTest.o
 test_cpputest/build/objs/LightSchedulerTest.o: test_cpputest/04_LightScheduler/LightSchedulerTest.cpp
-	g++ -c -g -Icpputest/include/CppUTest/ -Itest_cpputest/04_LightScheduler/ -Iinclude/04_LightScheduler/  $^ -o $@
+	g++ -c -g -Icpputest/include/CppUTest/ -Itest_cpputest/04_LightScheduler/LightControllerSpy/ -Iinclude/04_LightScheduler/LightController/  $^ -o $@
 
 #rule to compile AllCppUTestTests.cpp into AllCppUTestTests.o
 test_cpputest/build/objs/AllCppUTestTests.o: test_cpputest/AllCppUTestTests.cpp
