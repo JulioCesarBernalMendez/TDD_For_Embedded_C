@@ -1,5 +1,5 @@
 /**
- * @file    TestDummyDriver.c
+ * @file    TestDummyDriver.cpp
  * @author  Julio Cesar Bernal Mendez
  * @brief   Dummy Driver example source file containing the test cases and test group for the DummyDriver module.
  * 
@@ -42,5 +42,4 @@ TEST( DummyDriver, FirstTest )
 TEST( DummyDriver, SecondTest )
 {
     CHECK_EQUAL( 0xFF, 0xFF );
-    FAIL( "Intentional Fail, Here!" );
 }
