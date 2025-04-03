@@ -3,7 +3,13 @@
  * @author  Julio Cesar Bernal Mendez
  * @brief   Light Controller module spy source file that overrides the functions for the Light Controller module (LightController.c).
  * 
- *          Captures the parameters passed from the CUT (Code Under Test. In this case the Light Scheduler module)
+ *          Most of the functions contained here are originally implemented in LightController.c, 
+ *          however since that make it (Light Controller) a DOC (Depended On Component) to the
+ *          Light Scheduler module (i.e. Light Scheduler module, depends on Light Controller module),
+ *          it makes the Light Scheduler testing very challenging due to those dependencies.
+ *          For that we can use interfaces, test doubles and link-time substitution to manage the problem dependencies.
+ * 
+ *          These functions capture the parameters passed from the CUT (Code Under Test. In this case the Light Scheduler module)
  *          so the test can verify that the correct parameters have been passed to the CUT.
  * 
  *          The spy can also feed return values to the CUT just like a test stub.
@@ -20,12 +26,7 @@
 static int lastId;    /* last light ID controlled */
 static int lastState; /* last light State controlled */
 
-/* Function that initializes the spy's dead drop.
-   LightController_Create() is originally implemented in LightController.c,
-   however since that makes it a DOC (Depended On Component) to the Light Scheduler module
-   (i.e. Light Scheduler module, depends on Light Controller module), it makes the Light Scheduler testing
-   very challenging due to those dependencies. For that we can use interfaces, test doubles and link-time
-   substitution to manage the problem dependencies. 
+/* Function that initializes the spy's dead drop. 
 
    Here, we use a test double for LightController_Create(), which (originally implemented in LightController.c)
    is substituted during link-time (so that it uses the test version from LightControllerSpy.c instead) */
@@ -38,6 +39,18 @@ void LightController_Create( void )
       This test double simulates that behavior */
    lastId    = LIGHT_ID_UNKNOWN;
    lastState = LIGHT_STATE_UNKNOWN;
+}
+
+/* Function that intercepts critical information during the spy's mission.
+   This critical information is intercepted through the interface (LightController_On())
+   of the replaced collaborator (Light Controller).
+   
+   Here, we use a test double for LightController_On(), which (originally implemented in LightController.c)
+   is substituted during link-time (so that it uses the test version from LightControllerSpy.c instead) */
+void LightController_On( uint8_t id )
+{
+   lastId    = id;
+   lastState = LIGHT_ON;
 }
 
 /* this is a Light Controller spy function.
