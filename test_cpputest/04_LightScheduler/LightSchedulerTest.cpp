@@ -40,6 +40,7 @@ TEST_GROUP( LightScheduler )
     void setup()
     {
         /* initialization steps are executed before each TEST */ 
+        LightController_Create();
     }
  
     void teardown()
@@ -56,13 +57,11 @@ TEST( LightScheduler, NoChangeToLightsDuringInitialization )
        - The spy is interrogated after the "covert mission" by checking its "secret" test-only
          interface made up of LightControllerSpy_GetLastId() and
          LightControllerSpy_GetLastState()
-       - LightControllerSpy_GetLastId(): returns the ID of the light that was
-                                                        controlled or LIGHT_ID_UNKNOWN where
-                                                        there has been no light control
-       - LightControllerSpy_GetLastState(): returns LIGHT_OFF, LIGHT_ON or LIGHT_STATE_UNKNOWN.
-                                                           LIGHT_STATE_UNKNOWN means the light has not been
-                                                           changed since initialization
-       - if the mission is "successful", the interrogation should show that no light instructions were given
+       - LightControllerSpy_GetLastId(): returns the ID of the light that was controlled
+                                         or LIGHT_ID_UNKNOWN where there has been no light control.
+       - LightControllerSpy_GetLastState(): returns LIGHT_OFF, LIGHT_ON or LIGHT_STATE_UNKNOWN
+                                            LIGHT_STATE_UNKNOWN means the light has not been changed since initialization.
+       - if the mission is "successful", the interrogation should show that no light instructions were given.
 
        The test checks the expected outcome */
 
