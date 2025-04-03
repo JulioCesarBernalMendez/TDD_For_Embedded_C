@@ -53,15 +53,25 @@ void LightController_On( uint8_t id )
    lastState = LIGHT_ON;
 }
 
-/* this is a Light Controller spy function.
-   Since there's no specific function for this purpose on production code, it is implemented with the name 'spy' on it */
+/* this is a Light Controller's spy function.
+   Since there's no specific function for this purpose on production code,
+   it is implemented with the name 'spy' on it.
+   
+   The one being spied on (Light Controller) suspects nothing.
+   The intelligence is retrieved from the dead drop through secret accessor functions
+   after the CUT (Light Scheduler) is exercised */
 int LightControllerSpy_GetLastId( void )
 {
    return lastId;
 }
 
-/* this is a Light Controller spy function.
-   Since there's no specific function for this purpose on produciton code, it is implemented with the name 'spy' on it */
+/* this is a Light Controller's spy function.
+   Since there's no specific function for this purpose on production code,
+   it is implemented with the name 'spy' on it.
+   
+   The one being spied on (Light Controller) suspects nothing.
+   The intelligence is retrieved from the dead drop through secret accessor functions
+   after the CUT (Light Scheduler) is exercised */
 int LightControllerSpy_GetLastState( void )
 {
    return lastState;

@@ -122,7 +122,8 @@ debug_cpputest: objects_cpputest \
 #make objects_cpputest: executes the specified rules for the directory creation and compilation used for CppUTest testing
 objects_cpputest: mkdirs_cpputest \
                   test_cpputest/build/objs/DummyDriver.o test_cpputest/build/objs/TestDummyDriver.o \
-				  test_cpputest/build/objs/LightControllerSpyTest.o test_cpputest/build/objs/LightControllerSpy.o \
+				  test_cpputest/build/objs/LightControllerSpy.o test_cpputest/build/objs/LightControllerSpyTest.o \
+				  test_cpputest/build/objs/FakeTimeService.o test_cpputest/build/objs/FakeTimeServiceTest.o \
                   test_cpputest/build/objs/LightSchedulerTest.o \
                   test_cpputest/build/objs/AllCppUTestTests.o
 
@@ -152,6 +153,14 @@ test_cpputest/build/objs/LightControllerSpy.o: test_cpputest/04_LightScheduler/L
 test_cpputest/build/objs/LightControllerSpyTest.o: test_cpputest/04_LightScheduler/LightControllerSpy/LightControllerSpyTest.cpp
 	g++ -c -g -Icpputest/include/CppUTest/ -Itest_cpputest/04_LightScheduler/LightControllerSpy/ -Iinclude/04_LightScheduler/LightController/ $^ -o $@
 
+#rule to compile FakeTimeService.c into FakeTimeService.o
+test_cpputest/build/objs/FakeTimeService.o: test_cpputest/04_LightScheduler/FakeTimeService/FakeTimeService.c
+	gcc -c -g -Itest_cpputest/04_LightScheduler/FakeTimeService/ -Iinclude/04_LightScheduler/TimeService/ $^ -o $@
+
+#rule to compile FakeTimeServiceTest.cpp into FakeTimeServiceTest.o
+test_cpputest/build/objs/FakeTimeServiceTest.o: test_cpputest/04_LightScheduler/FakeTimeService/FakeTimeServiceTest.cpp
+	g++ -c -g -Icpputest/include/CppUTest/ -Itest_cpputest/04_LightScheduler/FakeTimeService/ -Iinclude/04_LightScheduler/TimeService/ $^ -o $@
+
 #rule to compile LightSchedulerTest.ccp into LightSchedulerTest.o
 test_cpputest/build/objs/LightSchedulerTest.o: test_cpputest/04_LightScheduler/LightSchedulerTest.cpp
 	g++ -c -g -Icpputest/include/CppUTest/ -Itest_cpputest/04_LightScheduler/LightControllerSpy/ -Iinclude/04_LightScheduler/LightController/  $^ -o $@
@@ -162,7 +171,8 @@ test_cpputest/build/objs/AllCppUTestTests.o: test_cpputest/AllCppUTestTests.cpp
 
 #rule to link the specified .o files into CppUTestTests.exe
 test_cpputest/build/CppUTestTests.exe: test_cpputest/build/objs/DummyDriver.o test_cpputest/build/objs/TestDummyDriver.o \
-                                       test_cpputest/build/objs/LightControllerSpyTest.o test_cpputest/build/objs/LightControllerSpy.o \
+                                       test_cpputest/build/objs/LightControllerSpy.o test_cpputest/build/objs/LightControllerSpyTest.o \
+                                       test_cpputest/build/objs/FakeTimeService.o test_cpputest/build/objs/FakeTimeServiceTest.o \
                                        test_cpputest/build/objs/LightSchedulerTest.o \
                                        test_cpputest/build/objs/AllCppUTestTests.o
 	g++ $^ -Lcpputest/lib -lCppUTest -o $@

@@ -14,7 +14,7 @@
        (LightController.c). Because the Light Scheduler module (which depends on the Light Controller module)
        is under test, some of the LightController.c function implementations are overriden with the spy's
        implementations in LightControllerSpy.c (this takes place during the linking stage).
-       Therefore there's no src/04_LightScheduler/LightController.c file in the project,
+       Therefore there's no src/04_LightScheduler/LightController/LightController.c file in the project,
        simply because the test code "does not need it" (at least for the time being) */
     
     void LightController_Create( void );
