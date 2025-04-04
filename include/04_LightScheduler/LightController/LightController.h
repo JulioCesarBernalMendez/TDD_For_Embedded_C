@@ -20,6 +20,6 @@
        simply because the test code "does not need it" (at least for the time being) */
     
     void LightController_Create( void );
-    void LightController_On( uint8_t id );
+    void LightController_On( int id );
 
 #endif

@@ -12,6 +12,7 @@ extern "C"
 {
     /* includes for things with C linkage */
     #include "FakeTimeService.h"
+    #include "LightScheduler.h"
 }
 
 /* includes for things with C++ linkage */

@@ -47,7 +47,7 @@ void LightController_Create( void )
    
    Here, we use a test double for LightController_On(), which (originally implemented in LightController.c)
    is substituted during link-time (so that it uses the test version from LightControllerSpy.c instead) */
-void LightController_On( uint8_t id )
+void LightController_On( int id )
 {
    lastId    = id;
    lastState = LIGHT_ON;

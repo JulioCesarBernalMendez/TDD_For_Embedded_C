@@ -100,3 +100,29 @@ TEST( LightScheduler, NoScheduleNothingHappens )
     LONGS_EQUAL( LIGHT_ID_UNKNOWN, LightControllerSpy_GetLastId() );
     LONGS_EQUAL( LIGHT_STATE_UNKNOWN, LightControllerSpy_GetLastState() );
 }
+
+TEST( LightScheduler, ScheduleOnEverydayNotTimeYet )
+{
+    /* After initialization of the Light Scheduler (setup() calls LightController_Create() which sets
+       both the last scheduled light ID and last scheduled light state as unknowns) */
+
+    /* The test schedules the light with ID 3 to turn ON everyday at the 1200th minute
+       (i.e. 1200mins / (60mins / 1hr) = 20hrs = 8pm) */
+    LightScheduler_ScheduleTurnOn( 3, EVERYDAY, 1200 );
+
+    /* The test takes control of the clock, telling the Fake Time Source (Fake Time Service) that it
+       should report that it's MONDAY at 7:59pm (one minute before the scheduled time above for the
+       light ID 3 to turn on everyday) */
+    FakeTimeService_SetDay( MONDAY );
+    FakeTimeService_SetMinute( 1199 );
+
+    /* The test simulates a callback to LightScheduler_Wakeup(), like the production TimeService
+       would do every minute */
+    LightScheduler_Wakeup();
+
+    /* Finally the test checks the expected outcome (since the time for the scheduled light ID has
+       not been reached, then both light ID and state are still unknown, due to the initial state
+       of the Light Scheduler) */
+    LONGS_EQUAL( LIGHT_ID_UNKNOWN, LightControllerSpy_GetLastId() );
+    LONGS_EQUAL( LIGHT_STATE_UNKNOWN, LightControllerSpy_GetLastState() );
+}
