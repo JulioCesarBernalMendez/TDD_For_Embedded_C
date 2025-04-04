@@ -18,4 +18,9 @@
 
     enum { TIME_UNKNOWN = -1 };
 
+    /* some other functions are not part of the Time Service,
+      therefore they're implemented inside the Fake Time Service */
+    void FakeTimeService_SetMinute( int minute );
+    void FakeTimeService_SetDay( int day );
+
 #endif

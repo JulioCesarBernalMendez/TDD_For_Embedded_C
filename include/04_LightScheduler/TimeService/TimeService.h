@@ -10,7 +10,14 @@
 #ifndef TIMESERVICE_H
 #define TIMESERVICE_H
 
-    typedef struct Time
+    typedef enum
+    {
+        NOT_A_DAY = -4,
+        EVERYDAY  = -3, WEEKDAY = -2, WEEKEND = -1,
+        SUNDAY = 1, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY
+    } Day;
+
+    typedef struct
     {
         int minuteOfDay;
         int dayOfWeek;

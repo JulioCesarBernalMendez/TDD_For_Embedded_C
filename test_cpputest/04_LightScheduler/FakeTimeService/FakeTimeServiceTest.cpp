@@ -48,3 +48,21 @@ TEST( FakeTimeService, Create )
     LONGS_EQUAL( TIME_UNKNOWN, time.minuteOfDay );
     LONGS_EQUAL( TIME_UNKNOWN, time.dayOfWeek );
 }
+
+TEST( FakeTimeService, Set )
+{
+    Time time;
+
+    /* set 42 as the minute of the day */
+    FakeTimeService_SetMinute( 42 );
+
+    /* set Saturday as the day of the week */
+    FakeTimeService_SetDay( SATURDAY );
+
+    /* get minute of the day and day of the week */
+    TimeService_GetTime( &time );
+
+    /* verify minute of the day is 42 and day of the week is saturday */
+    LONGS_EQUAL( 42, time.minuteOfDay );
+    LONGS_EQUAL( SATURDAY, time.dayOfWeek );
+}

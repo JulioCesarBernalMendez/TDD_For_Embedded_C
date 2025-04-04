@@ -51,3 +51,19 @@ void TimeService_GetTime( Time *time )
     time->minuteOfDay = fakeTime.minuteOfDay;
     time->dayOfWeek   = fakeTime.dayOfWeek;
 }
+
+/* As explained in the description of this file, time is a volatile input that makes testing a challenge.
+   Waiting for timed events takes too long. Here this interface takes over the clock making it possible 
+   to set a specific minute of the day */
+void FakeTimeService_SetMinute( int minute )
+{
+    fakeTime.minuteOfDay = minute;
+}
+
+/* As explained in the description of this file, time is a volatile input that makes testing a challenge.
+   Waiting for timed events takes too long. Here this interface takes over the clock making it possible 
+   to set a specific day of the week */
+void FakeTimeService_SetDay( int day )
+{
+    fakeTime.dayOfWeek = day;
+}
