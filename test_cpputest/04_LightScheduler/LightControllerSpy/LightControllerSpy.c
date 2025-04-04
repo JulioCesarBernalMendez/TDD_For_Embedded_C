@@ -53,6 +53,18 @@ void LightController_On( int id )
    lastState = LIGHT_ON;
 }
 
+/* Function that intercepts critical information during the spy's mission.
+   This critical information is intercepted through the interface (LightController_Off())
+   of the replaced collaborator (Light Controller).
+   
+   Here, we use a test double for LightController_Off(), which (originally implemented in LightController.c)
+   is substituted during link-time (so that it uses the test version from LightControllerSpy.c instead) */
+void LightController_Off( int id )
+{
+   lastId    = id;
+   lastState = LIGHT_OFF;
+}
+
 /* this is a Light Controller's spy function.
    Since there's no specific function for this purpose on production code,
    it is implemented with the name 'spy' on it.
