@@ -10,6 +10,9 @@
 #ifndef LIGHTSCHEDULER_H
 #define LIGHTSCHEDULER_H
 
+    #include "LightController.h"
+    #include "TimeService.h"
+
     typedef enum
     {
         NOT_A_DAY = -4,
