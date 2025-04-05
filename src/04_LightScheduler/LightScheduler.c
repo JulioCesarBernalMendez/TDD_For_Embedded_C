@@ -33,20 +33,30 @@ void LightScheduler_Create( void )
     scheduledEvent.id = UNUSED;
 }
 
+static void scheduleEvent( int id, Day day, int minuteOfDay, int event )
+{
+    /* assign the light ID to the scheduled event ID */
+    scheduledEvent.id = id;
+
+    /* assign the minute of the day to the scheduled event minute of the day */
+    scheduledEvent.minuteOfDay = minuteOfDay;
+
+    /* assign the scheduled event (either to turn on or off the light) */
+    scheduledEvent.event = event;
+}
+
 void LightScheduler_ScheduleTurnOn( int id, Day day, int minuteOfDay )
 {
     /* This function DOES NOT turn on the scheduled light when the time comes.
        That action is for the Light Controller to do, which is called by the
        Light Scheduler wake up */
 
-    /* assign the scheduled event */
-    scheduledEvent.event = TURN_ON;
-
-    /* assign the light ID to the turn on scheduled event ID */
-    scheduledEvent.id = id;
-
-    /* assign the minute of the day to the turn on scheduled event minute of the day */
-    scheduledEvent.minuteOfDay = minuteOfDay;
+    /* schedule the event:
+       - set the light ID
+       - set the day of the week to schedule the event (not implemented yet)
+       - set the minute of the day to schedule the event
+       - set the type of event as turn the light on */
+    scheduleEvent( id, day, minuteOfDay, TURN_ON );
 }
 
 void LightScheduler_ScheduleTurnOff( int id, Day day, int minuteOfDay )
@@ -55,14 +65,12 @@ void LightScheduler_ScheduleTurnOff( int id, Day day, int minuteOfDay )
        That action is for the Light Controller to do, which is called by the
        Light Scheduler wake up */
 
-    /* assign the scheduled event */
-    scheduledEvent.event = TURN_OFF;
-
-    /* assign the light ID to the turn off scheduled event ID */
-    scheduledEvent.id = id;
-
-    /* assign the minute of the day to the turn off scheduled event minute of the day */
-    scheduledEvent.minuteOfDay = minuteOfDay;
+    /* schedule the event:
+       - set the light ID
+       - set the day of the week to schedule the event (not implemented yet)
+       - set the minute of the day to schedule the event
+       - set the type of event as turn the light off */
+       scheduleEvent( id, day, minuteOfDay, TURN_OFF );
 }
 
 void LightScheduler_Wakeup( void )
