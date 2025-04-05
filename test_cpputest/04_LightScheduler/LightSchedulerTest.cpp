@@ -34,7 +34,25 @@ extern "C"
  
 /* includes for things with C++ linkage */
 #include "TestHarness.h"
- 
+
+/* Repeated operations and checks can be extracted into helper functions,
+   leaving the tests easier to read */
+void setTimeTo( int day, int minuteOfDay )
+{
+    /* The test takes control of the clock, telling the Fake Time Source (Fake Time Service) that it
+       should report that it's "day" at "minuteOfDay" */
+    FakeTimeService_SetDay( day );
+    FakeTimeService_SetMinute( minuteOfDay );
+}
+
+void checkLightState( int id, int state )
+{
+    /* Finally the test checks the expected outcome (the time for the scheduled light ID has been reached,
+       then light ID should be "id" and state should be "state")  */
+    LONGS_EQUAL( id, LightControllerSpy_GetLastId() );
+    LONGS_EQUAL( state, LightControllerSpy_GetLastState() );
+}
+
 TEST_GROUP( LightScheduler )
 {
     /* define data accessible to test group members here */
@@ -66,9 +84,7 @@ TEST( LightScheduler, NoChangeToLightsDuringInitialization )
        - if the mission is "successful", the interrogation should show that no light instructions were given.
 
        The test checks the expected outcome */
-
-    LONGS_EQUAL( LIGHT_ID_UNKNOWN, LightControllerSpy_GetLastId() );
-    LONGS_EQUAL( LIGHT_STATE_UNKNOWN, LightControllerSpy_GetLastState() );
+    checkLightState( LIGHT_ID_UNKNOWN, LIGHT_STATE_UNKNOWN );
 }
 
 TEST( LightScheduler, NoScheduleNothingHappens )
@@ -88,17 +104,17 @@ TEST( LightScheduler, NoScheduleNothingHappens )
        boundary tests right. Later when the full implementation is in place, these tests will
        continue to assure correct behavior of these boundary cases */
 
-    /* set 100 as the minute of the day and Monday as the day of the week */
-    FakeTimeService_SetMinute( 100 );
-    FakeTimeService_SetDay( MONDAY );
+    /* set 100 (1:40 am) as the minute of the day and Monday as the day of the week */
+    setTimeTo( MONDAY, 100 );
 
-    LightScheduler_Wakeup(); /* skeleton: this function does nothing yet */
+    /* The test simulates a callback to LightScheduler_Wakeup(), like the production TimeService
+       would do every minute */
+    LightScheduler_Wakeup();
 
-    /* Since no light ID and state has been scheduled, the expected light ID and state
-       has to be unknown due to the Light Scheduler's initialization (hence Light Controller's
+    /* Since no light ID and state have been scheduled, the expected light ID and state
+       have to be unknown due to the Light Scheduler's initialization (i.e. Light Controller's
        initialization) in setup() */
-    LONGS_EQUAL( LIGHT_ID_UNKNOWN, LightControllerSpy_GetLastId() );
-    LONGS_EQUAL( LIGHT_STATE_UNKNOWN, LightControllerSpy_GetLastState() );
+    checkLightState( LIGHT_ID_UNKNOWN, LIGHT_STATE_UNKNOWN );
 }
 
 TEST( LightScheduler, ScheduleOnEverydayNotTimeYet )
@@ -113,8 +129,7 @@ TEST( LightScheduler, ScheduleOnEverydayNotTimeYet )
     /* The test takes control of the clock, telling the Fake Time Source (Fake Time Service) that it
        should report that it's MONDAY at 7:59pm (one minute before the scheduled time above for the
        light ID 3 to turn on everyday) */
-    FakeTimeService_SetDay( MONDAY );
-    FakeTimeService_SetMinute( 1199 );
+    setTimeTo( MONDAY, 1199 );
 
     /* The test simulates a callback to LightScheduler_Wakeup(), like the production TimeService
        would do every minute */
@@ -123,8 +138,7 @@ TEST( LightScheduler, ScheduleOnEverydayNotTimeYet )
     /* Finally the test checks the expected outcome (since the time for the scheduled light ID has
        not been reached, then both light ID and state are still unknown, due to the initial state
        of the Light Scheduler) */
-    LONGS_EQUAL( LIGHT_ID_UNKNOWN, LightControllerSpy_GetLastId() );
-    LONGS_EQUAL( LIGHT_STATE_UNKNOWN, LightControllerSpy_GetLastState() );
+    checkLightState( LIGHT_ID_UNKNOWN, LIGHT_STATE_UNKNOWN );
 }
 
 TEST( LightScheduler, ScheduleOnEverydayItsTime )
@@ -139,8 +153,7 @@ TEST( LightScheduler, ScheduleOnEverydayItsTime )
     /* The test takes control of the clock, telling the Fake Time Source (Fake Time Service) that it
        should report that it's MONDAY at 8:00pm (the exact time as scheduled above for the
        light ID 3 to turn on everyday) */
-    FakeTimeService_SetDay( MONDAY );
-    FakeTimeService_SetMinute( 1200 );
+    setTimeTo( MONDAY, 1200 );
 
     /* The test simulates a callback to LightScheduler_Wakeup(), like the production TimeService
        would do every minute */
@@ -148,8 +161,7 @@ TEST( LightScheduler, ScheduleOnEverydayItsTime )
  
     /* Finally the test checks the expected outcome (the time for the scheduled light ID has been reached,
        then light ID should be 3 and state should be ON)  */
-    LONGS_EQUAL( 3, LightControllerSpy_GetLastId() );
-    LONGS_EQUAL( LIGHT_ON, LightControllerSpy_GetLastState() );
+    checkLightState( 3, LIGHT_ON );
 }
 
 TEST( LightScheduler, ScheduleOffEverydayItsTime )
@@ -164,8 +176,7 @@ TEST( LightScheduler, ScheduleOffEverydayItsTime )
     /* The test takes control of the clock, telling the Fake Time Source (Fake Time Service) that it
        should report that it's MONDAY at 8:00pm (the exact time as scheduled above for the
        light ID 3 to turn off everyday) */
-    FakeTimeService_SetDay( MONDAY );
-    FakeTimeService_SetMinute( 1200 );
+    setTimeTo( MONDAY, 1200 );
 
     /* The test simulates a callback to LightScheduler_Wakeup(), like the production TimeService
        would do every minute */
@@ -173,6 +184,5 @@ TEST( LightScheduler, ScheduleOffEverydayItsTime )
 
     /* Finally the test checks the expected outcome (the time for the scheduled light ID has been reached,
        then light ID should be 3 and state should be OFF)  */
-    LONGS_EQUAL( 3, LightControllerSpy_GetLastId() );
-    LONGS_EQUAL( LIGHT_OFF, LightControllerSpy_GetLastState() );
+    checkLightState( 3, LIGHT_OFF );
 }
