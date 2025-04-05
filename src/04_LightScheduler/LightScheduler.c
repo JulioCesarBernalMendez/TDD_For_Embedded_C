@@ -17,6 +17,7 @@ typedef struct
 {
     int event;       /* light event (ON or OFF) to schedule */
     int id;          /* light id to schedule */
+    Day day;         /* day of the week to schedule the light */
     int minuteOfDay; /* minute of the day to schedule the light */
 } ScheduledLightEvent;
 
@@ -32,6 +33,9 @@ static void scheduleEvent( int id, Day day, int minuteOfDay, int event )
 {
     /* assign the light ID to the scheduled event ID */
     scheduledEvent.id = id;
+
+    /* assight the day of the week to the scheduled event day of the week */
+    scheduledEvent.day = day;
 
     /* assign the minute of the day to the scheduled event minute of the day */
     scheduledEvent.minuteOfDay = minuteOfDay;
@@ -54,15 +58,20 @@ static void processEventDueNow( Time *time, ScheduledLightEvent *lightEvent )
        This function is all set to be called from a loop when support for multiple events is added */
 
     /* if the scheduled event light ID is not UNUSED (i.e. the light has been scheduled to be turned on/off
-       via LightScheduler_ScheduleTurnOn()/Off())
-       and if the current minute of the day is the same minute scheduled for the light to be turned on/off */
-    if ( ( lightEvent->id != UNUSED ) && ( time->minuteOfDay == scheduledEvent.minuteOfDay ) )
-    {
-        /* turn the light on or off as scheduled */
-        operateLight( lightEvent );
-    }
-   
-    /* otherwise do nothing */
+       via LightScheduler_ScheduleTurnOn()/Off() */
+    if ( lightEvent->id == UNUSED )
+        return;
+
+    /* if the scheduled day for the light to be turned on/off is not everyday and is not today */
+    if ( ( lightEvent->day != EVERYDAY ) && ( lightEvent->day != time->dayOfWeek ) )
+        return;
+
+    /* if the scheduled minute for the light to be turned on/off is not the same as the current minute of the day */
+    if ( lightEvent->minuteOfDay != time->minuteOfDay )
+        return;
+
+    /* else: a light was scheduled to turn on or off at this precise time */
+    operateLight( lightEvent );
 }
 
 void LightScheduler_Create( void )
@@ -106,7 +115,7 @@ void LightScheduler_Wakeup( void )
 
     Time time;
 
-    /* get minute of the day and day of the week */
+    /* get current minute of the day and day of the week */
     TimeService_GetTime( &time );
 
     /* schedule the event for the specified time */

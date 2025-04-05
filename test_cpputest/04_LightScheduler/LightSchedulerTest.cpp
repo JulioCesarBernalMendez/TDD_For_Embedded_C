@@ -119,8 +119,9 @@ TEST( LightScheduler, NoScheduleNothingHappens )
 
 TEST( LightScheduler, ScheduleOnEverydayNotTimeYet )
 {
-    /* After initialization of the Light Scheduler (setup() calls LightController_Create() which sets
-       both the last scheduled light ID and last scheduled light state as unknowns) */
+    /* after initialization of the Light Scheduler there are no scheduled events
+       (setup() calls LightController_Create() which sets both the last scheduled light ID
+       and last scheduled light state as unknowns) */
 
     /* The test schedules the light with ID 3 to turn ON everyday at the 1200th minute
        (i.e. 1200mins / (60mins / 1hr) = 20hrs = 8pm) */
@@ -143,8 +144,9 @@ TEST( LightScheduler, ScheduleOnEverydayNotTimeYet )
 
 TEST( LightScheduler, ScheduleOnEverydayItsTime )
 {
-    /* After initialization of the Light Scheduler (setup() calls LightController_Create() which sets
-       both the last scheduled light ID and last scheduled light state as unknowns) */
+    /* after initialization of the Light Scheduler there are no scheduled events
+       (setup() calls LightController_Create() which sets both the last scheduled light ID
+       and last scheduled light state as unknowns) */
 
     /* The test schedules the light with ID 3 to turn ON everyday at the 1200th minute
        (i.e. 1200mins / (60mins / 1hr) = 20hrs = 8pm) */
@@ -166,8 +168,9 @@ TEST( LightScheduler, ScheduleOnEverydayItsTime )
 
 TEST( LightScheduler, ScheduleOffEverydayItsTime )
 {
-    /* After initialization of the Light Scheduler (setup() calls LightController_Create() which sets
-       both the last scheduled light ID and last scheduled light state as unknowns) */
+    /* after initialization of the Light Scheduler there are no scheduled events
+       (setup() calls LightController_Create() which sets both the last scheduled light ID
+       and last scheduled light state as unknowns) */
 
     /* The test schedules the light with ID 3 to turn OFF everyday at the 1200th minute
        (i.e. 1200mins / (60mins / 1hr) = 20hrs = 8pm) */
@@ -185,4 +188,27 @@ TEST( LightScheduler, ScheduleOffEverydayItsTime )
     /* Finally the test checks the expected outcome (the time for the scheduled light ID has been reached,
        then light ID should be 3 and state should be OFF)  */
     checkLightState( 3, LIGHT_OFF );
+}
+
+
+TEST( LightScheduler, ScheduleWeekendItsMonday )
+{
+    /* after initialization of the Light Scheduler there are no scheduled events
+       (setup() calls LightController_Create() which sets both the last scheduled light ID
+       and last scheduled light state as unknowns) */
+
+    /* schedule light with ID 3 to turn on on weekends (saturdays and sundays) at minute 1200th (8pm)*/
+    LightScheduler_ScheduleTurnOn( 3, WEEKEND, 1200 );
+
+    /* set the current (fake) time to monday 8pm */
+    setTimeTo( MONDAY, 1200 );
+
+    /* callback to Light Scheduler wakeup (this compares the current time to any scheduled events,
+       if there's a match then it will turn on or off the specified light ID) */
+    LightScheduler_Wakeup();
+
+    /* compare the light ID and its state, they should be unknowns because scheduled event
+       has not been reached (scheduled a light on on weekends at 8pm, but its currently monday 8pm,
+       light ID and light state keep their initial states) */
+    checkLightState( LIGHT_ID_UNKNOWN, LIGHT_STATE_UNKNOWN );
 }
