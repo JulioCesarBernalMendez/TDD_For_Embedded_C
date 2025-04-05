@@ -15,7 +15,7 @@
 
 typedef struct
 {
-    int event;
+    int event;       /* light event (ON or OFF) to schedule */
     int id;          /* light id to schedule */
     int minuteOfDay; /* minute of the day to schedule the light */
 } ScheduledLightEvent;
@@ -28,11 +28,6 @@ enum
 
 static ScheduledLightEvent scheduledEvent;
 
-void LightScheduler_Create( void )
-{
-    scheduledEvent.id = UNUSED;
-}
-
 static void scheduleEvent( int id, Day day, int minuteOfDay, int event )
 {
     /* assign the light ID to the scheduled event ID */
@@ -43,6 +38,36 @@ static void scheduleEvent( int id, Day day, int minuteOfDay, int event )
 
     /* assign the scheduled event (either to turn on or off the light) */
     scheduledEvent.event = event;
+}
+
+static void operateLight( ScheduledLightEvent *lightEvent )
+{
+    /* operateLight captures the idea behind the if/else chain */
+
+    /* turn the light on or off as scheduled */
+    lightEvent->event == TURN_ON ? LightController_On( scheduledEvent.id ) : LightController_Off( scheduledEvent.id );
+}
+
+static void processEventDueNow( Time *time, ScheduledLightEvent *lightEvent )
+{
+    /* processEventDueNow is responsible for conditionally triggering a single event.
+       This function is all set to be called from a loop when support for multiple events is added */
+
+    /* if the scheduled event light ID is not UNUSED (i.e. the light has been scheduled to be turned on/off
+       via LightScheduler_ScheduleTurnOn()/Off())
+       and if the current minute of the day is the same minute scheduled for the light to be turned on/off */
+    if ( ( lightEvent->id != UNUSED ) && ( time->minuteOfDay == scheduledEvent.minuteOfDay ) )
+    {
+        /* turn the light on or off as scheduled */
+        operateLight( lightEvent );
+    }
+   
+    /* otherwise do nothing */
+}
+
+void LightScheduler_Create( void )
+{
+    scheduledEvent.id = UNUSED;
 }
 
 void LightScheduler_ScheduleTurnOn( int id, Day day, int minuteOfDay )
@@ -70,24 +95,20 @@ void LightScheduler_ScheduleTurnOff( int id, Day day, int minuteOfDay )
        - set the day of the week to schedule the event (not implemented yet)
        - set the minute of the day to schedule the event
        - set the type of event as turn the light off */
-       scheduleEvent( id, day, minuteOfDay, TURN_OFF );
+    scheduleEvent( id, day, minuteOfDay, TURN_OFF );
 }
 
 void LightScheduler_Wakeup( void )
 {
+    /* This is the function to be provided to the Time Service as a periodic callback function.
+       Right now it processes a single event, but later will process each event in the collection
+       of scheduled events */
+
     Time time;
 
     /* get minute of the day and day of the week */
     TimeService_GetTime( &time );
 
-    /* if the scheduled event ID is not UNUSED (i.e. the light has been scheduled to be turned on/off
-       via LightScheduler_ScheduleTurnOn()/Off())
-       and if the current minute of the day is the same minute scheduled for the light to be turned on/off */
-    if ( ( scheduledEvent.id != UNUSED ) && ( time.minuteOfDay == scheduledEvent.minuteOfDay ) )
-    {
-        /* turn the light on or off as scheduled */
-        scheduledEvent.event == TURN_ON ? LightController_On( scheduledEvent.id ) : LightController_Off( scheduledEvent.id );
-    }
-
-    /* otherwise do nothing */
+    /* schedule the event for the specified time */
+    processEventDueNow( &time, &scheduledEvent );
 }
