@@ -57,13 +57,16 @@ static void processEventDueNow( Time *time, ScheduledLightEvent *lightEvent )
     /* processEventDueNow is responsible for conditionally triggering a single event.
        This function is all set to be called from a loop when support for multiple events is added */
 
+    int today        = time->dayOfWeek;
+    int scheduledDay = lightEvent->day;
+
     /* if the scheduled event light ID is not UNUSED (i.e. the light has been scheduled to be turned on/off
        via LightScheduler_ScheduleTurnOn()/Off() */
     if ( lightEvent->id == UNUSED )
         return;
 
     /* if the scheduled day for the light to be turned on/off is not everyday and is not today */
-    if ( ( lightEvent->day != EVERYDAY ) && ( lightEvent->day != time->dayOfWeek ) )
+    if ( ( scheduledDay != EVERYDAY ) && ( scheduledDay != today ) )
         return;
 
     /* if the scheduled minute for the light to be turned on/off is not the same as the current minute of the day */

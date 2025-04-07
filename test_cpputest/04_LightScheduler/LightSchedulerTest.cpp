@@ -233,3 +233,25 @@ TEST( LightScheduler, ScheduleTuesdayButItsMonday )
        light ID and light state keep their initial states) */
     checkLightState( LIGHT_ID_UNKNOWN, LIGHT_STATE_UNKNOWN );
 }
+
+TEST( LightScheduler, ScheduleTuesdayAndItsTuesday )
+{
+    /* after initialization of the Light Scheduler there are no scheduled events
+       (setup() calls LightController_Create() which sets both the last scheduled light ID
+       and last scheduled light state as unknowns) */
+
+    /* schedule light with ID 3 to turn on on TUESDAY at minute 1200 (8pm)*/
+    LightScheduler_ScheduleTurnOn( 3, TUESDAY, 1200 );
+
+    /* set the current (fake) time to TUESDAY 8pm */
+    setTimeTo( TUESDAY, 1200 );
+
+    /* callback to Light Scheduler wakeup (this compares the current time to any scheduled events,
+       if there's a match then it will turn on or off the specified light ID) */
+    LightScheduler_Wakeup();
+
+    /* compare the light ID and its state, they should be light ID 3 and light state on because the
+       scheduled event has been reached (scheduled light ID 3 on on tuesdays for 8pm. Currently it's tuesday 8pm,
+       therefore light ID and light state must have been changed) */
+    checkLightState( 3, LIGHT_ON );
+}
