@@ -31,7 +31,7 @@ extern "C"
     #include "LightControllerSpy.h"
     #include "FakeTimeService.h"
 }
- 
+
 /* includes for things with C++ linkage */
 #include "TestHarness.h"
 
@@ -190,14 +190,13 @@ TEST( LightScheduler, ScheduleOffEverydayItsTime )
     checkLightState( 3, LIGHT_OFF );
 }
 
-
 TEST( LightScheduler, ScheduleWeekendItsMonday )
 {
     /* after initialization of the Light Scheduler there are no scheduled events
        (setup() calls LightController_Create() which sets both the last scheduled light ID
        and last scheduled light state as unknowns) */
 
-    /* schedule light with ID 3 to turn on on weekends (saturdays and sundays) at minute 1200th (8pm)*/
+    /* schedule light with ID 3 to turn on on weekends (saturdays and sundays) at minute 1200 (8pm)*/
     LightScheduler_ScheduleTurnOn( 3, WEEKEND, 1200 );
 
     /* set the current (fake) time to monday 8pm */
@@ -207,8 +206,30 @@ TEST( LightScheduler, ScheduleWeekendItsMonday )
        if there's a match then it will turn on or off the specified light ID) */
     LightScheduler_Wakeup();
 
-    /* compare the light ID and its state, they should be unknowns because scheduled event
-       has not been reached (scheduled a light on on weekends at 8pm, but its currently monday 8pm,
+    /* compare the light ID and its state, they should be unknowns because the scheduled event
+       has not been reached (scheduled a light on on weekends for 8pm, but its currently monday 8pm,
+       light ID and light state keep their initial states) */
+    checkLightState( LIGHT_ID_UNKNOWN, LIGHT_STATE_UNKNOWN );
+}
+
+TEST( LightScheduler, ScheduleTuesdayButItsMonday )
+{
+    /* after initialization of the Light Scheduler there are no scheduled events
+       (setup() calls LightController_Create() which sets both the last scheduled light ID
+       and last scheduled light state as unknowns) */
+
+    /* schedule light with ID 3 to turn on on TUESDAY at minute 1200 (8pm)*/
+    LightScheduler_ScheduleTurnOn( 3, TUESDAY, 1200 );
+
+    /* set the current (fake) time to monday 8pm */
+    setTimeTo( MONDAY, 1200 );
+
+    /* callback to Light Scheduler wakeup (this compares the current time to any scheduled events,
+       if there's a match then it will turn on or off the specified light ID) */
+    LightScheduler_Wakeup();
+
+    /* compare the light ID and its state, they should be unknowns because the scheduled event
+       has not been reached (scheduled a light on on tuesdays for 8pm, but its currently monday 8pm,
        light ID and light state keep their initial states) */
     checkLightState( LIGHT_ID_UNKNOWN, LIGHT_STATE_UNKNOWN );
 }
