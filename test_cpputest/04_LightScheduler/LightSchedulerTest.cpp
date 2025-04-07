@@ -255,3 +255,25 @@ TEST( LightScheduler, ScheduleTuesdayAndItsTuesday )
        therefore light ID and light state must have been changed) */
     checkLightState( 3, LIGHT_ON );
 }
+
+TEST( LightScheduler, ScheduleWeekendItsFriday )
+{
+    /* after initialization of the Light Scheduler there are no scheduled events
+       (setup() calls LightController_Create() which sets both the last scheduled light ID
+       and last scheduled light state as unknowns) */
+
+    /* schedule light with ID 3 to turn on on weekends (saturdays and sundays) at minute 1200 (8pm)*/
+    LightScheduler_ScheduleTurnOn( 3, WEEKEND, 1200 );
+
+    /* set the current (fake) time to friday 8pm */
+    setTimeTo( FRIDAY, 1200 );
+
+    /* callback to Light Scheduler wakeup (this compares the current time to any scheduled events,
+       if there's a match then it will turn on or off the specified light ID) */
+    LightScheduler_Wakeup();
+
+    /* compare the light ID and its state, they should be unknowns because the scheduled event
+       has not been reached (scheduled a light on on weekends, i.e. saturdays and sundays for 8pm,
+       but its currently friday 8pm, light ID and light state keep their initial states) */
+    checkLightState( LIGHT_ID_UNKNOWN, LIGHT_STATE_UNKNOWN );
+}
