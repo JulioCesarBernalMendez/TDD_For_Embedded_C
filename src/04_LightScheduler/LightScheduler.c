@@ -65,8 +65,11 @@ static void processEventDueNow( Time *time, ScheduledLightEvent *lightEvent )
     if ( lightEvent->id == UNUSED )
         return;
 
-    /* if the scheduled day for the light to be turned on/off is not everyday and is not today */
-    if ( ( scheduledDay != EVERYDAY ) && ( scheduledDay != today ) )
+    /* if the scheduled day for the light to be turned on/off:
+       - is not everyday and is not today (i.e. scheduled day is not set for everyday or day has not been reached) and ...
+       - is not weekday and today is not saturday (i.e. scheduled day is set for the weekends but today is not saturday) */
+    if ( ( scheduledDay != EVERYDAY ) && ( scheduledDay != today )
+      && ( scheduledDay != WEEKDAY ) && ( today != SATURDAY ) )
         return;
 
     /* if the scheduled minute for the light to be turned on/off is not the same as the current minute of the day */
