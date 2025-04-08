@@ -104,7 +104,12 @@ static void processEventDueNow( Time *time, ScheduledLightEvent *lightEvent )
 
 void LightScheduler_Create( void )
 {
+    /* there are no scheduled events (lights to be turned on/off) */
     scheduledEvent.id = UNUSED;
+
+    /* Register the alarm callback function to be called "every minute".
+       In this case LightScheduler_Wakeup() */
+    TimeService_SetPeriodicAlarmInSeconds( 60, LightScheduler_Wakeup );
 }
 
 void LightScheduler_ScheduleTurnOn( int id, Day day, int minuteOfDay )

@@ -22,5 +22,7 @@
       therefore they're implemented inside the Fake Time Service */
     void FakeTimeService_SetMinute( int minute );
     void FakeTimeService_SetDay( int day );
+    WakeUpCallback FakeTimeService_GetAlarmCallback( void );
+    int FakeTimeSource_GetAlarmPeriodInSeconds( void );
 
 #endif

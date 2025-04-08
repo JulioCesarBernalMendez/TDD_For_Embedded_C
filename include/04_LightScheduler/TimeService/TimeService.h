@@ -16,6 +16,8 @@
         int dayOfWeek;
     } Time;
 
+    typedef void ( *WakeUpCallback )( void );
+
     /* These are the function prototypes for the Time Service module production source code
        (TimeService.c). Because the Light Scheduler module (which depends on the Time Service module)
        is under test, some of the TimeService.c function implementations are overriden with the fake's
@@ -25,5 +27,6 @@
 
     void TimeService_Create( void );
     void TimeService_GetTime( Time *time );
+    void TimeService_SetPeriodicAlarmInSeconds( int seconds, WakeUpCallback cb );
  
 #endif

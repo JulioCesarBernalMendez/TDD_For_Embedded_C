@@ -34,6 +34,12 @@
    - and day of the week */
 static Time fakeTime;
 
+/* pointer to the time service callback function */
+static WakeUpCallback callback;
+
+/* period set for the alarm callback */
+static int period;
+
 void TimeService_Create( void )
 {
     fakeTime.minuteOfDay = TIME_UNKNOWN;
@@ -52,6 +58,19 @@ void TimeService_GetTime( Time *time )
     time->dayOfWeek   = fakeTime.dayOfWeek;
 }
 
+/* Function that controls the information returned to the CUT during the Fake's mission.
+   This information is controlled through the interface (TimeService_SetPeriodicAlarmInSeconds())
+   of the replaced collaborator (Time Service). The fake simple saves the function pointer and its period
+   and reports it on demand.
+   
+   Here, we use a test double for TimeService_SetPeriodicAlarmInSeconds(), which (originally implemented in TimeService.c)
+   is substituted during link-time (so that it uses the test version from FakeTimeService.c instead) */
+void TimeService_SetPeriodicAlarmInSeconds( int seconds, WakeUpCallback cb )
+{
+    callback = cb;
+    period   = seconds;
+}
+
 /* As explained in the description of this file, time is a volatile input that makes testing a challenge.
    Waiting for timed events takes too long. Here this interface takes over the clock making it possible 
    to set a specific minute of the day */
@@ -66,4 +85,18 @@ void FakeTimeService_SetMinute( int minute )
 void FakeTimeService_SetDay( int day )
 {
     fakeTime.dayOfWeek = day;
+}
+
+/* this fake function returns the alarm callback function registered via
+   TimeService_SetPeriodicAlarminSeconds() which is called inside LightScheduler_Create() */
+WakeUpCallback FakeTimeService_GetAlarmCallback( void )
+{
+    return callback;
+}
+
+/* this fake function returns the alarm callback period registered via
+   TimeService_SetPeriodicAlarminSeconds() which is called inside LightScheduler_Create() */
+int FakeTimeSource_GetAlarmPeriodInSeconds( void )
+{
+    return period;
 }

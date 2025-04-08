@@ -53,6 +53,51 @@ void checkLightState( int id, int state )
     LONGS_EQUAL( state, LightControllerSpy_GetLastState() );
 }
 
+
+/****************************** LightSchedulerInitAndCleanup TEST GROUP ******************************/
+/* Use a new test group.
+
+   The initialization and cleanup tests have very different needs from the other LightScheduler tests.
+   The TEST_GROUP() has nothing in it because each test is self-contained.
+   There's no duplication to get rid of */
+TEST_GROUP( LightSchedulerInitAndCleanup )
+{
+    /* define data accessible to test group members here */
+ 
+    void setup()
+    {
+        /* initialization steps are executed before each TEST */ 
+    }
+
+    void teardown()
+    {
+        /* clean up steps are executed after each TEST */
+    }
+};
+
+TEST( LightSchedulerInitAndCleanup, CreateStartsOneMinuteAlarm )
+{
+    /* This test assures the system is wired properly.
+
+       To test the registration, (Fake) Time Service needs to spy on the call to
+       TimeService_SetPeriodicAlarmInSeconds(), which is called during the Light Scheduler
+       initialization in LightScheduler_Create(). This lets the test check that the proper
+       callback was set */
+
+    /* Initialize the Light Scheduler.
+       Upon initialization:
+       - there will be no scheduled lights to be turned on/off
+       - LightScheduler_Wakeup() will be registered as the alarm callback to be "called" every minute */
+    LightScheduler_Create();
+
+    /* check the expected outcome, the registered alarm callback is LightScheduler_Wakeup()
+       with a one minute period */
+    POINTERS_EQUAL( ( void* ) LightScheduler_Wakeup, ( void* ) FakeTimeService_GetAlarmCallback() );
+    LONGS_EQUAL( 60, FakeTimeSource_GetAlarmPeriodInSeconds() );
+}
+
+
+/****************************** LightScheduler TEST GROUP ******************************/
 TEST_GROUP( LightScheduler )
 {
     /* define data accessible to test group members here */
