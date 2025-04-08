@@ -12,6 +12,7 @@
 
     #include "LightController.h"
     #include "TimeService.h"
+    #include "common.h"
 
     typedef enum
     {

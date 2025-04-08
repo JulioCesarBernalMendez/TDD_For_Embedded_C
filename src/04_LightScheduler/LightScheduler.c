@@ -52,6 +52,31 @@ static void operateLight( ScheduledLightEvent *lightEvent )
     lightEvent->event == TURN_ON ? LightController_On( scheduledEvent.id ) : LightController_Off( scheduledEvent.id );
 }
 
+static int doesLightRespondToday( int today, int scheduledDay )
+{
+    /* this helper function returns TRUE if the today is the day for the scheduled light to be turned on or off,
+       otherwise returns FALSE */
+
+    /* if the light is scheduled to turn on/off everyday (then no matter the day, today the light should be turned on/off) */
+    if ( scheduledDay == EVERYDAY )
+        return TRUE;
+
+    /* if the light is scheduled to turn on/off today */
+    if ( scheduledDay == today )
+        return TRUE;
+
+    /* if the light is scheduled to turn on/off on the weekends and today is either saturday or sunday */
+    if ( ( scheduledDay == WEEKEND ) && ( ( today == SATURDAY ) || ( today == SUNDAY ) ) )
+        return TRUE;
+
+    /* if the light is scheduled to turn on/off and today is either monday to friday */
+    if ( ( scheduledDay == WEEKDAY ) && ( ( today >= MONDAY ) && ( today <= FRIDAY ) ) )
+        return TRUE;
+
+    /* if none of the previous conditions is satisfied, then today the light is not scheduled to turn on/off */
+    return FALSE;
+}
+
 static void processEventDueNow( Time *time, ScheduledLightEvent *lightEvent )
 {
     /* processEventDueNow is responsible for conditionally triggering a single event.
@@ -65,11 +90,8 @@ static void processEventDueNow( Time *time, ScheduledLightEvent *lightEvent )
     if ( lightEvent->id == UNUSED )
         return;
 
-    /* if the scheduled day for the light to be turned on/off:
-       - is not everyday and is not today (i.e. scheduled day is not set for everyday or day has not been reached) and ...
-       - is not weekday and today is not saturday (i.e. scheduled day is set for the weekends but today is not saturday) */
-    if ( ( scheduledDay != EVERYDAY ) && ( scheduledDay != today )
-      && ( scheduledDay != WEEKDAY ) && ( today != SATURDAY ) && ( today != SUNDAY ) )
+    /* if today is not the scheduled day for the light to be turned on/off */
+    if ( doesLightRespondToday( today, scheduledDay ) == FALSE )
         return;
 
     /* if the scheduled minute for the light to be turned on/off is not the same as the current minute of the day */
