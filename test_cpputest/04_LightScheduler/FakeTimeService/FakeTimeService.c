@@ -71,6 +71,24 @@ void TimeService_SetPeriodicAlarmInSeconds( int seconds, WakeUpCallback cb )
     period   = seconds;
 }
 
+/* Function that controls the information returned to the CUT during the Fake's mission.
+   This information is controlled through the interface (TimeService_CancelPeriodicAlarmInSeconds())
+   of the replaced collaborator (Time Service). The fake simple resets the function pointer and its period
+   and reports it on demand.
+   
+   Here, we use a test double for TimeService_CancelPeriodicAlarmInSeconds(), which (originally implemented in TimeService.c)
+   is substituted during link-time (so that it uses the test version from FakeTimeService.c instead) */
+void TimeService_CancelPeriodicAlarmInSeconds( int seconds, WakeUpCallback cb )
+{
+    /* if the specified alarm is set */
+    if ( ( cb == callback ) && ( period == seconds ) )
+    {
+        /* "destroy" it */
+        callback = NULL;
+        period   = 0;
+    }
+}
+
 /* As explained in the description of this file, time is a volatile input that makes testing a challenge.
    Waiting for timed events takes too long. Here this interface takes over the clock making it possible 
    to set a specific minute of the day */

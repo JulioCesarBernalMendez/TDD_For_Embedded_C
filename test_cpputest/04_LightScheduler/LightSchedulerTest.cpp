@@ -96,6 +96,20 @@ TEST( LightSchedulerInitAndCleanup, CreateStartsOneMinuteAlarm )
     LONGS_EQUAL( 60, FakeTimeSource_GetAlarmPeriodInSeconds() );
 }
 
+TEST( LightSchedulerInitAndCleanup, DestroyCancelsOneMinuteAlarm )
+{
+    /* This test assures LightScheduler_Destroy() cancels the periodic alarm
+       registered during the Light Scheduler initialization with LightScheduler_Create() */
+    LightScheduler_Create();
+
+    /* "destroy" the periodic alarm */
+    LightScheduler_Destroy();
+
+    /* check the expected outcome, there's no registered alarm callback and period is 0 */
+    POINTERS_EQUAL( NULL, ( void* ) FakeTimeService_GetAlarmCallback() );
+    LONGS_EQUAL( 0, FakeTimeSource_GetAlarmPeriodInSeconds() );
+}
+
 
 /****************************** LightScheduler TEST GROUP ******************************/
 TEST_GROUP( LightScheduler )
@@ -112,6 +126,7 @@ TEST_GROUP( LightScheduler )
     void teardown()
     {
         /* clean up steps are executed after each TEST */
+        LightScheduler_Destroy();
     }
 };
 

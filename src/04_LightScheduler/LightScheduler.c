@@ -112,6 +112,13 @@ void LightScheduler_Create( void )
     TimeService_SetPeriodicAlarmInSeconds( 60, LightScheduler_Wakeup );
 }
 
+void LightScheduler_Destroy( void )
+{
+    /* unregister the alarm callback function previously registered with TimeService_SetPeriodicAlarmInSeconds()
+       which is called in LightScheduler_Create() */
+    TimeService_CancelPeriodicAlarmInSeconds( 60, LightScheduler_Wakeup );
+}
+
 void LightScheduler_ScheduleTurnOn( int id, Day day, int minuteOfDay )
 {
     /* This function DOES NOT turn on the scheduled light when the time comes.
