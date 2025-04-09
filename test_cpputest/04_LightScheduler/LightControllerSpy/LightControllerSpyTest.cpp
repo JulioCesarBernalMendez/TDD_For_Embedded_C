@@ -52,3 +52,16 @@ TEST( LightControllerSpy, RememberTheLastLightIdControlled )
     LONGS_EQUAL( 10, LightControllerSpy_GetLastId() );
     LONGS_EQUAL( LIGHT_ON, LightControllerSpy_GetLastState() );
 }
+
+TEST( LightControllerSpy, RememberAllLightStates )
+{
+    /* turn on light ID 0 */
+    LightController_On( 0 );
+
+    /* turn off light ID 31 */
+    LightController_Off( 31 );
+
+    /* check the light states for both lights ID 0 and 31 */
+    LONGS_EQUAL( LIGHT_ON, LightControllerSpy_GetLightState( 0 ) );
+    LONGS_EQUAL( LIGHT_OFF, LightControllerSpy_GetLightState( 31 ) );
+}

@@ -26,6 +26,7 @@
 
    /* some other functions are not part of the Light Controller,
       therefore they're implemented inside the Light Controller Spy */
+   int LightControllerSpy_GetLightState( int id );
    int LightControllerSpy_GetLastId( void );
    int LightControllerSpy_GetLastState( void );
 

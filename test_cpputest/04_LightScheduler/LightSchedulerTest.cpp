@@ -45,12 +45,25 @@ void setTimeTo( int day, int minuteOfDay )
     FakeTimeService_SetMinute( minuteOfDay );
 }
 
+/* Repeated operations and checks can be extracted into helper functions,
+   leaving the tests easier to read */
 void checkLightState( int id, int state )
 {
-    /* Finally the test checks the expected outcome (the time for the scheduled light ID has been reached,
-       then light ID should be "id" and state should be "state")  */
-    LONGS_EQUAL( id, LightControllerSpy_GetLastId() );
-    LONGS_EQUAL( state, LightControllerSpy_GetLastState() );
+    /* This test helper now is modified to use LightControllerSpy_GetLightState(),
+       this change allows checkLightState() to work in the multiple event case */
+
+    /* the test checks the expected outcome (the time for the scheduled light ID has been reached,
+       then light ID should be "id" and state should be "state") */
+    if ( id == LIGHT_ID_UNKNOWN )
+    {
+        LONGS_EQUAL( id, LightControllerSpy_GetLastId() );
+        LONGS_EQUAL( state, LightControllerSpy_GetLastState() );
+    }
+    else
+    {
+        LONGS_EQUAL( id, LightControllerSpy_GetLastId() );
+        LONGS_EQUAL( state, LightControllerSpy_GetLightState( id ) );
+    }
 }
 
 

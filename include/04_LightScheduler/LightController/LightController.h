@@ -12,6 +12,8 @@
 
     #include <stdint.h>
 
+    enum { MAX_LIGHTS_NUMBER = 32 };
+
     /* These are the function prototypes for the Light Controller module production source code
        (LightController.c). Because the Light Scheduler module (which depends on the Light Controller module)
        is under test, some of the LightController.c function implementations are overriden with the spy's
