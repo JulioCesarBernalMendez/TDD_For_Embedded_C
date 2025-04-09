@@ -425,3 +425,19 @@ TEST( LightScheduler, ScheduleTwoEventsAtTheSameTime )
        Currently it's sunday 8pm, therefore light ID and light state must have been changed) */
     checkLightState( 12, LIGHT_ON );
 }
+
+TEST( LightScheduler, RejectsTooManyEvents )
+{
+    int i; /* scheduled event index */
+
+    /* for all the possible number of scheduled events (MAX_EVENTS_NUMBER) */
+    for ( i = 0; i < 128; i++ )
+    {
+        /* schedule a light to turn on */
+        LONGS_EQUAL( LS_OK, LightScheduler_ScheduleTurnOn( 6, MONDAY, 600 + i ) );
+    }
+
+    /* Schedule a light to turn on. At this point there are no more available scheduled events,
+       so the expected result is too many events */
+    LONGS_EQUAL( LS_TOO_MANY_EVENTS, LightScheduler_ScheduleTurnOn( 6, MONDAY, 600 + i ) );
+}

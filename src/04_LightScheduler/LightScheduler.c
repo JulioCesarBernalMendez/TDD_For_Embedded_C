@@ -31,11 +31,18 @@ enum
 static ScheduledLightEvent scheduledEvent;
 static ScheduledLightEvent scheduledEvents[ MAX_EVENTS_NUMBER ]; /* slots for scheduled events (up to 128 slots) */
 
-static void scheduleEvent( int id, Day day, int minuteOfDay, int event )
+static int scheduleEvent( int id, Day day, int minuteOfDay, int event )
 {
     /* Now scheduleEvent() handles multiple-event "schedulization" */
 
     int i; /* scheduled event index */
+
+    /* if the light ID is out of range */
+    if ( ( id < 0 ) || ( id >= MAX_LIGHTS_NUMBER ) )
+    {
+        /* light ID not valid, return id out of bounds */
+        return LS_ID_OUT_OF_BOUNDS;
+    }
 
     /************ MULTIPLE-EVENT SCHEDULIZATION ************/
     /* loop through the array of scheduled event slots */
@@ -58,9 +65,12 @@ static void scheduleEvent( int id, Day day, int minuteOfDay, int event )
 
             /* break out of the loop. The event slot has now been scheduled,
                there's no reason to keep looping */
-            break;
+            return LS_OK;
         }
     }
+
+    /* if code reaches here it means there were no available scheduled event slots */
+    return LS_TOO_MANY_EVENTS;
 }
 
 static void operateLight( ScheduledLightEvent *lightEvent )
@@ -148,7 +158,7 @@ void LightScheduler_Destroy( void )
     TimeService_CancelPeriodicAlarmInSeconds( 60, LightScheduler_Wakeup );
 }
 
-void LightScheduler_ScheduleTurnOn( int id, Day day, int minuteOfDay )
+int LightScheduler_ScheduleTurnOn( int id, Day day, int minuteOfDay )
 {
     /* This function DOES NOT turn on the scheduled light(s) when the time comes.
        That action is for the Light Controller to do, which is called by the
@@ -159,10 +169,10 @@ void LightScheduler_ScheduleTurnOn( int id, Day day, int minuteOfDay )
        - set the day of the week to schedule the event(s)
        - set the minute of the day to schedule the event(s)
        - set the type of event(s) as turn the light(s) on */
-    scheduleEvent( id, day, minuteOfDay, TURN_ON );
+    return scheduleEvent( id, day, minuteOfDay, TURN_ON );
 }
 
-void LightScheduler_ScheduleTurnOff( int id, Day day, int minuteOfDay )
+int LightScheduler_ScheduleTurnOff( int id, Day day, int minuteOfDay )
 {
     /* This function DOES NOT turn off the scheduled light(s) when the time comes.
        That action is for the Light Controller to do, which is called by the
@@ -173,7 +183,7 @@ void LightScheduler_ScheduleTurnOff( int id, Day day, int minuteOfDay )
        - set the day of the week to schedule the event(s)
        - set the minute of the day to schedule the event(s)
        - set the type of event(s) as turn the light(s) off */
-    scheduleEvent( id, day, minuteOfDay, TURN_OFF );
+    return scheduleEvent( id, day, minuteOfDay, TURN_OFF );
 }
 
 void LightScheduler_Wakeup( void )
