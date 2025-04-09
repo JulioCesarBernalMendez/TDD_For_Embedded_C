@@ -24,13 +24,24 @@ typedef struct
 enum
 {
     UNUSED = -1,
-    TURN_OFF, TURN_ON
+    TURN_OFF, TURN_ON,
+    MAX_EVENTS_NUMBER = 128 /* max number of possible scheduled events */
 };
 
 static ScheduledLightEvent scheduledEvent;
+static ScheduledLightEvent scheduledEvents[ MAX_EVENTS_NUMBER ]; /* slots for scheduled events (up to 128 slots) */
 
 static void scheduleEvent( int id, Day day, int minuteOfDay, int event )
 {
+    /* As code is added for multiple scheduled events, we can avoid breaking the existing tests
+       by using the "don't burn your bridges" principle. Add the new multi-scheduled event functionality
+       alongside the support for a single event.
+
+       Now scheduleEvent() handles both single and multiple-event "schedulization" */
+
+    int i; /* scheduled event index */
+
+    /************ SINGLE-EVENT SCHEDULIZATION ************/
     /* assign the light ID to the scheduled event ID */
     scheduledEvent.id = id;
 
@@ -42,6 +53,31 @@ static void scheduleEvent( int id, Day day, int minuteOfDay, int event )
 
     /* assign the scheduled event (either to turn on or off the light) */
     scheduledEvent.event = event;
+
+    /************ MULTIPLE-EVENT SCHEDULIZATION ************/
+    /* loop through the array of scheduled event slots */
+    for ( i = 0; i < MAX_EVENTS_NUMBER; i++ )
+    {
+        /* find an available slot */
+        if ( scheduledEvents[ i ].id == UNUSED )
+        {
+            /* assign the light ID to the scheduled event ID */
+            scheduledEvents[ i ].id = id;
+
+            /* assign the day of the week to the scheduled event day of the week */
+            scheduledEvents[ i ].day = day;
+
+            /* assign the minute of the day to the scheduled event minute of the day */
+            scheduledEvents[ i ].minuteOfDay = minuteOfDay;
+
+            /* assign the scheduled event (either to turn on or off the light) */
+            scheduledEvents[ i ].event = event;
+
+            /* break out of the loop. The event slot has now been scheduled,
+               there's no reason to keep looping */
+            break;
+        }
+    }
 }
 
 static void operateLight( ScheduledLightEvent *lightEvent )
@@ -49,7 +85,7 @@ static void operateLight( ScheduledLightEvent *lightEvent )
     /* operateLight captures the idea behind the if/else chain */
 
     /* turn the light on or off as scheduled */
-    lightEvent->event == TURN_ON ? LightController_On( scheduledEvent.id ) : LightController_Off( scheduledEvent.id );
+    lightEvent->event == TURN_ON ? LightController_On( lightEvent->id ) : LightController_Off( lightEvent->id );
 }
 
 static int doesLightRespondToday( int today, int scheduledDay )
@@ -104,8 +140,27 @@ static void processEventDueNow( Time *time, ScheduledLightEvent *lightEvent )
 
 void LightScheduler_Create( void )
 {
-    /* there are no scheduled events (lights to be turned on/off) */
+    /* As code is added for multiple scheduled events, we can avoid breaking the existing tests
+       by using the "don't burn your bridges" principle. Add the new multi-scheduled event functionality
+       alongside the support for a single event.
+
+       Now LightScheduler_Create() handles both single and multiple-scheduled event initializations */
+
+    int i; /* scheduled event index */
+
+    /************ SINGLE-EVENT INITIALIZATION ************/
+    /* there is no scheduled event (light to be turned on/off).
+       So the slot for the scheduled event is unused and available */
     scheduledEvent.id = UNUSED;
+
+    /************ MULTIPLE-EVENT INITIALIZATION ************/
+    /* for all the scheduled event slots */
+    for ( i = 0; i < MAX_EVENTS_NUMBER; i++ )
+    {
+        /* there are no scheduled events (lights to be turned on/off).
+           So ALL the slots for a scheduled event is unused and available */
+        scheduledEvents[ i ].id = UNUSED;
+    }
 
     /* Register the alarm callback function to be called "every minute".
        In this case LightScheduler_Wakeup() */
@@ -121,43 +176,55 @@ void LightScheduler_Destroy( void )
 
 void LightScheduler_ScheduleTurnOn( int id, Day day, int minuteOfDay )
 {
-    /* This function DOES NOT turn on the scheduled light when the time comes.
+    /* This function DOES NOT turn on the scheduled light(s) when the time comes.
        That action is for the Light Controller to do, which is called by the
        Light Scheduler wake up */
 
-    /* schedule the event:
-       - set the light ID
-       - set the day of the week to schedule the event (not implemented yet)
-       - set the minute of the day to schedule the event
-       - set the type of event as turn the light on */
+    /* schedule the event(s):
+       - set the light ID(s)
+       - set the day of the week to schedule the event(s)
+       - set the minute of the day to schedule the event(s)
+       - set the type of event(s) as turn the light(s) on */
     scheduleEvent( id, day, minuteOfDay, TURN_ON );
 }
 
 void LightScheduler_ScheduleTurnOff( int id, Day day, int minuteOfDay )
 {
-    /* This function DOES NOT turn offthe scheduled light when the time comes.
+    /* This function DOES NOT turn off the scheduled light(s) when the time comes.
        That action is for the Light Controller to do, which is called by the
        Light Scheduler wake up */
 
-    /* schedule the event:
-       - set the light ID
-       - set the day of the week to schedule the event (not implemented yet)
-       - set the minute of the day to schedule the event
-       - set the type of event as turn the light off */
+    /* schedule the event(s):
+       - set the light ID(s)
+       - set the day of the week to schedule the event(s)
+       - set the minute of the day to schedule the event(s)
+       - set the type of event(s) as turn the light(s) off */
     scheduleEvent( id, day, minuteOfDay, TURN_OFF );
 }
 
 void LightScheduler_Wakeup( void )
 {
-    /* This is the function to be provided to the Time Service as a periodic callback function.
-       Right now it processes a single event, but later will process each event in the collection
-       of scheduled events */
+    /* This is the function to be provided to the Time Service as a periodic callback function */
 
-    Time time;
+    /* As code is added for multiple scheduled events, we can avoid breaking the existing tests
+       by using the "don't burn your bridges" principle. Add the new multi-scheduled event functionality
+       alongside the support for a single event */
+
+    int i; /* scheduled event index */
+    Time time; /* struct to hold current time (day of the week and minute of the day) */
 
     /* get current minute of the day and day of the week */
     TimeService_GetTime( &time );
 
-    /* schedule the event for the specified time */
+    /************ SINGLE-EVENT PROCESSING ************/
+    /* process the scheduled event (if any) */
     processEventDueNow( &time, &scheduledEvent );
+
+    /************ MULTIPLE-EVENT PROCESSING ************/
+    /* for all the scheduled event slots */
+    for ( i = 0; i < MAX_EVENTS_NUMBER; i++ )
+    {
+        /* process the scheduled event (if any) */
+        processEventDueNow( &time, &scheduledEvents[ i ] );
+    }
 }

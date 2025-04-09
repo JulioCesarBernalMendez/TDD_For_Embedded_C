@@ -61,7 +61,6 @@ void checkLightState( int id, int state )
     }
     else
     {
-        LONGS_EQUAL( id, LightControllerSpy_GetLastId() );
         LONGS_EQUAL( state, LightControllerSpy_GetLightState( id ) );
     }
 }
@@ -393,4 +392,36 @@ TEST( LightScheduler, ScheduleWeekendItsSunday )
        scheduled event has been reached (scheduled light ID 3 on on weekends (saturdays and sundays) for 8pm.
        Currently it's sunday 8pm, therefore light ID and light state must have been changed) */
     checkLightState( 3, LIGHT_ON );
+}
+
+TEST( LightScheduler, ScheduleTwoEventsAtTheSameTime )
+{
+    /* after initialization of the Light Scheduler there are no scheduled events
+       (setup() calls LightController_Create() which sets the last scheduled light ID
+       and last scheduled light state as unknowns */
+
+    /* Schedule light with ID 3 to turn on on sunday at minute 1200 (8pm).
+       This will use a slot from the scheduledEvents[] array */
+    LightScheduler_ScheduleTurnOn( 3, SUNDAY, 1200 );
+
+    /* Schedule light with ID 12 to turn on on sunday at minute 1200 (8pm).
+       This will use a slot from the scheduledEvents[] array */
+    LightScheduler_ScheduleTurnOn( 12, SUNDAY, 1200 );
+
+    /* set the current (fake) time to sunday 8pm */
+    setTimeTo( SUNDAY, 1200 );
+
+    /* callback to Light Scheduler wakeup (this compares the current time to any scheduled events,
+       if there's a match then it will turn on or off the specified light ID(s)) */
+    LightScheduler_Wakeup();
+
+    /* compare the light ID and its state, they should be light ID 3 and light state on because the
+       scheduled event has been reached (scheduled light ID 3 on on sunday for 8pm.
+       Currently it's sunday 8pm, therefore light ID and light state must have been changed) */
+    checkLightState( 3, LIGHT_ON );
+
+    /* compare the light ID and its state, they should be light ID 12 and light state on because the
+       scheduled event has been reached (scheduled light ID 12 on on sunday for 8pm.
+       Currently it's sunday 8pm, therefore light ID and light state must have been changed) */
+    checkLightState( 12, LIGHT_ON );
 }
