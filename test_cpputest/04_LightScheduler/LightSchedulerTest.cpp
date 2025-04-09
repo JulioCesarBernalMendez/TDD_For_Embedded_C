@@ -441,3 +441,24 @@ TEST( LightScheduler, RejectsTooManyEvents )
        so the expected result is too many events */
     LONGS_EQUAL( LS_TOO_MANY_EVENTS, LightScheduler_ScheduleTurnOn( 6, MONDAY, 600 + i ) );
 }
+
+TEST( LightScheduler, RemoveRecyclesScheduledSlot )
+{
+    int i; /* scheduled event index */
+
+    /* for all the possible number of scheduled events (MAX_EVENTS_NUMBER) */
+    for ( i = 0; i < 128; i++ )
+    {
+        /* schedule a light to turn on */
+        LONGS_EQUAL( LS_OK, LightScheduler_ScheduleTurnOn( 6, MONDAY, 600 + i ) );
+    }
+
+    /* At this point there are no more available scheduled events (i.e. too many events) */
+
+    /* remove the scheduled light ID 6 to turn on on MONDAY at minite 600 */
+    LightScheduler_ScheduleRemove( 6, MONDAY, 600 );
+
+    /* Schedule a light to turn on. This should not be a problem since there is
+       one slot available to schedule this event, so the expected result is OK */
+    LONGS_EQUAL( LS_OK, LightScheduler_ScheduleTurnOn( 13, MONDAY, 1000 ) );
+}

@@ -28,7 +28,6 @@ enum
     MAX_EVENTS_NUMBER = 128 /* max number of possible scheduled events */
 };
 
-static ScheduledLightEvent scheduledEvent;
 static ScheduledLightEvent scheduledEvents[ MAX_EVENTS_NUMBER ]; /* slots for scheduled events (up to 128 slots) */
 
 static int scheduleEvent( int id, Day day, int minuteOfDay, int event )
@@ -184,6 +183,39 @@ int LightScheduler_ScheduleTurnOff( int id, Day day, int minuteOfDay )
        - set the minute of the day to schedule the event(s)
        - set the type of event(s) as turn the light(s) off */
     return scheduleEvent( id, day, minuteOfDay, TURN_OFF );
+}
+
+int LightScheduler_ScheduleRemove( int id, Day day, int minuteOfDay )
+{
+    int i; /* scheduled event index */
+
+    /* if the light ID is out of range */
+    if ( ( id < 0 ) || ( id >= MAX_LIGHTS_NUMBER ) )
+    {
+        /* light ID not valid, return id out of bounds */
+        return LS_ID_OUT_OF_BOUNDS;
+    }
+
+    /************ MULTIPLE-EVENT REMOVAL ************/
+    /* loop through the array of scheduled event slots */
+    for ( i = 0; i < MAX_EVENTS_NUMBER; i++ )
+    {
+        /* if the scheduled event to remove exists */
+        if ( scheduledEvents[ i ].id  == id
+          && scheduledEvents[ i ].day == day
+          && scheduledEvents[ i ].minuteOfDay == minuteOfDay )
+        {
+            /* remove it (make the slot available again) */
+            scheduledEvents[ i ].id = UNUSED;
+
+            /* break out of the loop. The event slot has now been removed,
+               there's no reason to keep looping */
+            return LS_OK;
+        }
+    }
+
+    /* if code reaches here it means the event to remove does not exist */
+    return LS_EVENT_DOES_NOT_EXIST;
 }
 
 void LightScheduler_Wakeup( void )
