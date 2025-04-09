@@ -463,6 +463,36 @@ TEST( LightScheduler, RemoveRecyclesScheduledSlot )
     LONGS_EQUAL( LS_OK, LightScheduler_ScheduleTurnOn( 13, MONDAY, 1000 ) );
 }
 
+TEST( LightScheduler, RemoveMultipleScheduledEvent )
+{
+    /* after initialization of the Light Scheduler there are no scheduled events
+       (setup() calls LightController_Create() which sets all the light ID states to unknowns) */
+    
+    /* Schedule light with ID 6 to turn on on monday at 10am */
+    LightScheduler_ScheduleTurnOn( 6, MONDAY, 600 );
+
+    /* Schedule light with ID 7 to turn on on monday at 10am */
+    LightScheduler_ScheduleTurnOn( 7, MONDAY, 600 );
+    
+    /* remove the scheduled light ID 6 to turn on on MONDAY at 10am */
+    LightScheduler_ScheduleRemove( 6, MONDAY, 600 );
+
+    /* set the current (fake) time to monday 10am */
+    setTimeTo( MONDAY, 600 );
+
+    /* callback to Light Scheduler wakeup (this compares the current time to any scheduled events,
+       if there's a match then it will turn on or off the specified light ID(s)) */
+    LightScheduler_Wakeup();
+
+    /* compare the light ID 6's state. It should be light state unknown because the
+       scheduled event was removed with LightScheduler_ScheduleRemove() */
+    checkLightState( 6, LIGHT_STATE_UNKNOWN );
+
+    /* compare the light ID 7's state. It should be light on because the scheduled event
+       (light ID 7 to turn on on monday 10am) has been reached (current time is monday 10am) */
+    checkLightState( 7, LIGHT_ON );
+}
+
 TEST( LightScheduler, AcceptsValidLightIds )
 {
     /* This test schedules only valid light IDs to turn on.

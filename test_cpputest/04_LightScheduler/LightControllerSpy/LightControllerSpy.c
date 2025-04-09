@@ -26,7 +26,7 @@
 static int lastId;    /* last light ID controlled */
 static int lastState; /* last light State controlled */
 
-static int lightState[ MAX_LIGHTS_NUMBER ]; /* array that contains the light state for all the lights */
+static int lightStates[ MAX_LIGHTS_NUMBER ]; /* array that contains the light state for all the lights (up to 32 lights) */
 
 /* Function that initializes the spy's dead drop. 
 
@@ -39,8 +39,20 @@ void LightController_Create( void )
       - the state of the light that was last controlled has to be LIGHT_STATE_UNKNOWN (the light has not been changed since initialization).
       
       This test double simulates that behavior */
+
+   int i; /* scheduled event index */
+   
+   /* last light ID controlled and its state are both unknown */
    lastId    = LIGHT_ID_UNKNOWN;
    lastState = LIGHT_STATE_UNKNOWN;
+
+   /************ MULTIPLE-EVENT INITIALIZATION ************/
+   /* for all the light IDs (MAX_LIGHTS_NUMBER) */
+   for ( i = 0; i < MAX_LIGHTS_NUMBER; i++ )
+   {
+      /* all their states are unknown */
+      lightStates[ i ] = LIGHT_STATE_UNKNOWN;
+   }
 }
 
 /* Function that intercepts critical information during the spy's mission.
@@ -59,7 +71,7 @@ void LightController_On( int id )
    if ( ( id >= 0 ) && ( id < MAX_LIGHTS_NUMBER ) )
    {
       /* update the specified light ID state */
-      lightState[ id ] = LIGHT_ON;
+      lightStates[ id ] = LIGHT_ON;
    }
 }
 
@@ -79,7 +91,7 @@ void LightController_Off( int id )
    if ( ( id >= 0 ) && ( id < MAX_LIGHTS_NUMBER ) )
    {
       /* update the specified light ID state */
-      lightState[ id ] = LIGHT_OFF;
+      lightStates[ id ] = LIGHT_OFF;
    }
 }
 
@@ -100,7 +112,7 @@ int LightControllerSpy_GetLightState( int id )
    }
    
    /* else, return the light ID state */
-   return lightState[ id ];
+   return lightStates[ id ];
 }
 
 /* this is a Light Controller's spy function.
