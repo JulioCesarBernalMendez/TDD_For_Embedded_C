@@ -462,3 +462,19 @@ TEST( LightScheduler, RemoveRecyclesScheduledSlot )
        one slot available to schedule this event, so the expected result is OK */
     LONGS_EQUAL( LS_OK, LightScheduler_ScheduleTurnOn( 13, MONDAY, 1000 ) );
 }
+
+TEST( LightScheduler, AcceptsValidLightIds )
+{
+    /* This test schedules only valid light IDs to turn on.
+       Since there's enough scheduled event slots and the IDs are valid,
+       the expected result is OK */
+
+    /* schedule light ID 0 to turn on  */
+    LONGS_EQUAL( LS_OK, LightScheduler_ScheduleTurnOn( 0, MONDAY, 600 ) );
+
+    /* schedule light ID 15 to turn on  */
+    LONGS_EQUAL( LS_OK, LightScheduler_ScheduleTurnOn( 15, MONDAY, 600 ) );
+
+    /* schedule light ID 31 to turn on  */
+    LONGS_EQUAL( LS_OK, LightScheduler_ScheduleTurnOn( 31, MONDAY, 600 ) );
+}
