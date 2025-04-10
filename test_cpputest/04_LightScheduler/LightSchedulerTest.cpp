@@ -496,15 +496,27 @@ TEST( LightScheduler, RemoveMultipleScheduledEvent )
 TEST( LightScheduler, AcceptsValidLightIds )
 {
     /* This test schedules only valid light IDs to turn on.
-       Since there's enough scheduled event slots and the IDs are valid,
+       Since there are enough scheduled event slots and the IDs are valid,
        the expected result is OK */
 
-    /* schedule light ID 0 to turn on  */
+    /* schedule light ID 0 to turn on */
     LONGS_EQUAL( LS_OK, LightScheduler_ScheduleTurnOn( 0, MONDAY, 600 ) );
 
-    /* schedule light ID 15 to turn on  */
+    /* schedule light ID 15 to turn on */
     LONGS_EQUAL( LS_OK, LightScheduler_ScheduleTurnOn( 15, MONDAY, 600 ) );
 
-    /* schedule light ID 31 to turn on  */
+    /* schedule light ID 31 to turn on */
     LONGS_EQUAL( LS_OK, LightScheduler_ScheduleTurnOn( 31, MONDAY, 600 ) );
+}
+
+TEST( LightScheduler, RejectsInvalidLightIds )
+{
+    /* This test schedules only invalid light IDs to turn on.
+       Even though there are enough scheduled event slots, the expected result is id out of bounds */
+
+    /* schedule light ID -1 to turn on */
+    LONGS_EQUAL( LS_ID_OUT_OF_BOUNDS, LightScheduler_ScheduleTurnOn( -1, MONDAY, 600 ) );
+
+    /* schedule light ID 32 to turn on */
+    LONGS_EQUAL( LS_ID_OUT_OF_BOUNDS, LightScheduler_ScheduleTurnOn( 32, MONDAY, 600 ) );   
 }
