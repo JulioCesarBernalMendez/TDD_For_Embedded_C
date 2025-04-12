@@ -125,6 +125,7 @@ objects_cpputest: mkdirs_cpputest \
 				  test_cpputest/build/objs/LightControllerSpy.o test_cpputest/build/objs/LightControllerSpyTest.o \
 				  test_cpputest/build/objs/FakeTimeService.o test_cpputest/build/objs/FakeTimeServiceTest.o \
                   test_cpputest/build/objs/LightScheduler.o test_cpputest/build/objs/LightSchedulerTest.o \
+				  test_cpputest/build/objs/RandomMinute.o test_cpputest/build/objs/RandomMinuteTest.o \
                   test_cpputest/build/objs/AllCppUTestTests.o
 
 #make mkdirs_cpputest: creates the directory test_cpputest/build/objs/ used to store the compiled .o files used for CppUTest testing
@@ -161,6 +162,14 @@ test_cpputest/build/objs/FakeTimeService.o: test_cpputest/04_LightScheduler/Fake
 test_cpputest/build/objs/FakeTimeServiceTest.o: test_cpputest/04_LightScheduler/FakeTimeService/FakeTimeServiceTest.cpp
 	g++ -c -g -Icpputest/include/CppUTest/ -Itest_cpputest/04_LightScheduler/FakeTimeService/ -Iinclude/04_LightScheduler/TimeService/ -Iinclude/04_LightScheduler/ -Iinclude/04_LightScheduler/LightController/ -Iinclude/util/ $^ -o $@
 
+#rule to compile RandomMinute.c into RandomMinute.o
+test_cpputest/build/objs/RandomMinute.o: src/04_LightScheduler/RandomMinute/RandomMinute.c
+	gcc -c -g -Iinclude/04_LightScheduler/RandomMinute/ $^ -o $@
+
+#rule to compile RandomMinuteTest.cpp into RandomMinuteTest.o
+test_cpputest/build/objs/RandomMinuteTest.o: test_cpputest/04_LightScheduler/RandomMinute/RandomMinuteTest.cpp
+	g++ -c -g -Icpputest/include/CppUTest/ -Iinclude/04_LightScheduler/RandomMinute/ $^ -o $@
+
 #rule to compile LightScheduler.c into LightScheduler.o
 test_cpputest/build/objs/LightScheduler.o: src/04_LightScheduler/LightScheduler.c
 	gcc -c -g -Iinclude/04_LightScheduler/ -Iinclude/04_LightScheduler/LightController/ -Iinclude/04_LightScheduler/TimeService/ -Iinclude/util/ $^ -o $@
@@ -178,5 +187,6 @@ test_cpputest/build/CppUTestTests.exe: test_cpputest/build/objs/DummyDriver.o te
                                        test_cpputest/build/objs/LightControllerSpy.o test_cpputest/build/objs/LightControllerSpyTest.o \
                                        test_cpputest/build/objs/FakeTimeService.o test_cpputest/build/objs/FakeTimeServiceTest.o \
                                        test_cpputest/build/objs/LightScheduler.o test_cpputest/build/objs/LightSchedulerTest.o \
+									   test_cpputest/build/objs/RandomMinute.o test_cpputest/build/objs/RandomMinuteTest.o \
                                        test_cpputest/build/objs/AllCppUTestTests.o
 	g++ $^ -Lcpputest/lib -lCppUTest -o $@
