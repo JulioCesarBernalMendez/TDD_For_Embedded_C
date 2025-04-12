@@ -8,7 +8,7 @@
  */
 
 #include <stdlib.h> /* rand() and srand() */
-#include <time.h> /* time() */
+#include <time.h>   /* time() */
 #include "RandomMinute.h"
 
 /* Range of random minutes (-bound to +bound).

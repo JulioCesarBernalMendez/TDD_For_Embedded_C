@@ -11,7 +11,8 @@
 extern "C"
 {
     /* includes for things with C linkage */
-    #include <stdio.h> /* includes printf() function prototype */
+    #include <stdio.h>  /* includes printf() function prototype */
+    #include <string.h> /* includes memset() function prototype */
     #include "RandomMinute.h" 
 }
  
@@ -73,5 +74,42 @@ TEST( RandomMinute, GetIsInRange )
 
         /* check that minute is not out of range */
         AssertMinuteIsInRange();
+    }
+}
+
+TEST( RandomMinute, AllValuesPossible )
+{
+    /* array long enough to hold all possible random values (between -BOUND to +BOUND) */
+    int hit[ 2* BOUND + 1 ];
+
+    /* counter */
+    int i;
+
+    /* initialize the hit array to 0 */
+    memset( hit, 0, sizeof( hit ) );
+
+    /* Repeat 225 times.
+       This value of 225 came after a little experimentation. It ensures that every
+       possible random value (between -BOUND to +BOUND) is obtained at least once */ 
+    for ( i = 0; i < 225; i++ )
+    {
+        /* get a random minute between -BOUND to +BOUND */
+        minute = RandomMinute_Get();
+
+        /* check that minute is not out of range */
+        AssertMinuteIsInRange();
+
+        /* Every number between -BOUND to +BOUND has a counter in the hit array.
+           This line of code increases the respective random number counter by one.
+           "+ BOUND" here is an offset so that the lowest random value -BOUND is assigned index 0 in the array */
+        ++hit[ minute + BOUND ];
+    }
+
+    /* for all the elements in the array */
+    for ( i = 0; i < ( 2 * BOUND + 1 ); i++ )
+    {
+        /* check that the respective counter number is greater than 0
+          (i.e. every possible random number has been obtained at least once) */
+        CHECK( hit[ i ] > 0 );
     }
 }
