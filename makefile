@@ -147,20 +147,20 @@ test_cpputest/build/objs/TestDummyDriver.o: test_cpputest/03_DummyDriver/TestDum
 	g++ -c -g -Iinclude/03_DummyDriver/ -Icpputest/include/CppUTest/ $^ -o $@
 
 #rule to compile LightControllerSpy.c into LightControllerSpy.o
-test_cpputest/build/objs/LightControllerSpy.o: test_cpputest/04_LightScheduler/LightControllerSpy/LightControllerSpy.c
-	gcc -c -g -Itest_cpputest/04_LightScheduler/LightControllerSpy/ -Iinclude/04_LightScheduler/LightController/ $^ -o $@
+test_cpputest/build/objs/LightControllerSpy.o: mocks/LightControllerSpy/LightControllerSpy.c
+	gcc -c -g -Iinclude/04_LightScheduler/LightController/ $^ -o $@
 
 #rule to compile LightControllerSpyTest.ccp into LightControllerSpyTest.o
 test_cpputest/build/objs/LightControllerSpyTest.o: test_cpputest/04_LightScheduler/LightControllerSpy/LightControllerSpyTest.cpp
-	g++ -c -g -Icpputest/include/CppUTest/ -Itest_cpputest/04_LightScheduler/LightControllerSpy/ -Iinclude/04_LightScheduler/LightController/ $^ -o $@
+	g++ -c -g -Icpputest/include/CppUTest/ -Imocks/LightControllerSpy/ -Iinclude/04_LightScheduler/LightController/ $^ -o $@
 
 #rule to compile FakeTimeService.c into FakeTimeService.o
-test_cpputest/build/objs/FakeTimeService.o: test_cpputest/04_LightScheduler/FakeTimeService/FakeTimeService.c
-	gcc -c -g -Itest_cpputest/04_LightScheduler/FakeTimeService/ -Iinclude/04_LightScheduler/TimeService/ -Iinclude/util/ $^ -o $@
+test_cpputest/build/objs/FakeTimeService.o: mocks/FakeTimeService/FakeTimeService.c
+	gcc -c -g -Iinclude/04_LightScheduler/TimeService/ -Iinclude/util/ $^ -o $@
 
 #rule to compile FakeTimeServiceTest.cpp into FakeTimeServiceTest.o
 test_cpputest/build/objs/FakeTimeServiceTest.o: test_cpputest/04_LightScheduler/FakeTimeService/FakeTimeServiceTest.cpp
-	g++ -c -g -Icpputest/include/CppUTest/ -Itest_cpputest/04_LightScheduler/FakeTimeService/ -Iinclude/04_LightScheduler/TimeService/ -Iinclude/04_LightScheduler/ -Iinclude/04_LightScheduler/LightController/ -Iinclude/util/ $^ -o $@
+	g++ -c -g -Icpputest/include/CppUTest/ -Imocks/FakeTimeService/ -Iinclude/04_LightScheduler/TimeService/ -Iinclude/04_LightScheduler/ -Iinclude/04_LightScheduler/LightController/ -Iinclude/util/ $^ -o $@
 
 #rule to compile RandomMinute.c into RandomMinute.o
 test_cpputest/build/objs/RandomMinute.o: src/04_LightScheduler/RandomMinute/RandomMinute.c
@@ -176,7 +176,7 @@ test_cpputest/build/objs/LightScheduler.o: src/04_LightScheduler/LightScheduler.
 
 #rule to compile LightSchedulerTest.ccp into LightSchedulerTest.o
 test_cpputest/build/objs/LightSchedulerTest.o: test_cpputest/04_LightScheduler/LightSchedulerTest.cpp
-	g++ -c -g -Icpputest/include/CppUTest/ -Iinclude/04_LightScheduler/ -Itest_cpputest/04_LightScheduler/LightControllerSpy/ -Iinclude/04_LightScheduler/LightController/ -Itest_cpputest/04_LightScheduler/FakeTimeService/ -Iinclude/04_LightScheduler/TimeService/ -Iinclude/util/ $^ -o $@
+	g++ -c -g -Icpputest/include/CppUTest/ -Iinclude/04_LightScheduler/ -Imocks/LightControllerSpy/ -Iinclude/04_LightScheduler/LightController/ -Imocks/FakeTimeService/ -Iinclude/04_LightScheduler/TimeService/ -Iinclude/util/ $^ -o $@
 
 #rule to compile AllCppUTestTests.cpp into AllCppUTestTests.o
 test_cpputest/build/objs/AllCppUTestTests.o: test_cpputest/AllCppUTestTests.cpp
