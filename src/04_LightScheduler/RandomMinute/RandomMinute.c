@@ -27,7 +27,9 @@ void RandomMinute_Create( int b )
     srand( time( NULL ) );
 }
 
-int RandomMinute_Get( void )
+/* Now the name of the production code implementation of the random minute generation is changed slightly,
+   the reason is because RandomMinute_Get now is a function pointer */
+int RandomMinute_GetImpl( void )
 {
     /* Generate a random value between -bound and +bound.
     
@@ -41,3 +43,12 @@ int RandomMinute_Get( void )
                                            highest: 5 -  0 =  5 */
     return bound - rand() % ( 2 * bound + 1 );
 }
+
+/* The function pointer is initialized to point to RandomMinute_GetImpl().
+
+   The purpose of this function pointer is to allow any TEST() or TEST_GROUP() to override the
+   default function pointer value (RandomMinute_GetImpl) with a pointer to a fake random minute function.
+
+   This is useful when testing unpredictable production code (e.g. rand()) and helps avoid unpredictable results
+   (in future tests, we will want to have control over the returned result by RandomMinute_Get()) )*/
+int ( *RandomMinute_Get )( void ) = RandomMinute_GetImpl;

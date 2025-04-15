@@ -11,6 +11,13 @@
 #define RANDOMMINUTE_H
 
     void RandomMinute_Create( int b );
-    int RandomMinute_Get( void );
+
+    /* The production code is refactored so that RandomMinute_GetImpl() can be substituted with
+       a fake Random Minute (used for testing).
+       
+       The direct function call (RandomMinute_Get()) needs to be converted to a function pointer (RandomMinute_Get).
+       
+       The pointer must be extern to avoid multiple definition errors at link time */
+    extern int ( *RandomMinute_Get )( void );
 
 #endif
