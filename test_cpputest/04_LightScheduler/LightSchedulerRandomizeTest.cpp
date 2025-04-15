@@ -22,10 +22,6 @@ extern "C"
 TEST_GROUP( LightSchedulerRandomize )
 {
     /* define data accessible to test group members here */
-
-    /* function pointer, used to restore the default RandomMinute_Get function (used in production)
-       at the end of the tests by teardown() */
-    int ( *savedRandomMinute_Get )();
       
     void setup()
     {
@@ -33,20 +29,20 @@ TEST_GROUP( LightSchedulerRandomize )
         LightController_Create();
         LightScheduler_Create();
 
-        /* store the default function pointed to (RandomMinute_GetImpl()) by RandomMinute_Get (used in production) */
-        savedRandomMinute_Get = RandomMinute_Get;
+        /* Function pointer restoration is so common that CppUTest has a built-in macro for setting
+           and restoring function pointers.
+           
+           When a function pointer is set with UT_PTR_SET() duging setup() or during any TEST(),
+           it's automatically restored after teardown() completes */
 
         /* update RandomMinute_Get to point to the fake Random Minute generator (this is done to have control on
            the values returned by RandomMinute_Get in the tests) */
-        RandomMinute_Get = FakeRandomMinute_Get;
+        UT_PTR_SET( RandomMinute_Get, FakeRandomMinute_Get );
     }
       
     void teardown()
     {
         /* clean up steps are executed after each TEST */
-        
-        /* restore the default Random Minute generation function (used in production) */
-        RandomMinute_Get = savedRandomMinute_Get;
     }
 
     /* Repeated operations and checks can be extracted into helper functions,
