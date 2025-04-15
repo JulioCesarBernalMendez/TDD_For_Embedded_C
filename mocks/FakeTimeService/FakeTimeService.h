@@ -15,7 +15,6 @@
        (Real) Time Service, this takes place during the linking stage.
        Therefore include the .h header from production code, but those functions will be linked to the fake instead */
     #include "TimeService.h"
-    #include "common.h"
 
     enum { TIME_UNKNOWN = -1 };
 

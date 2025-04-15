@@ -20,7 +20,7 @@ extern "C"
 #include "TestHarness.h"
 
 enum { BOUND = 30 }; /* range of possible random values, in this case -30 to +30 */
- 
+
 TEST_GROUP( RandomMinute )
 {
     /* define data accessible to test group members here */

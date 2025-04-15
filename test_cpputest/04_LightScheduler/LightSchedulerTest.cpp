@@ -99,12 +99,12 @@ TEST( LightSchedulerInitAndCleanup, CreateStartsOneMinuteAlarm )
     /* Initialize the Light Scheduler.
        Upon initialization:
        - there will be no scheduled lights to be turned on/off
-       - LightScheduler_Wakeup() will be registered as the alarm callback to be "called" every minute */
+       - LightScheduler_WakeUp() will be registered as the alarm callback to be "called" every minute */
     LightScheduler_Create();
 
-    /* check the expected outcome, the registered alarm callback is LightScheduler_Wakeup()
+    /* check the expected outcome, the registered alarm callback is LightScheduler_WakeUp()
        with a one minute period */
-    POINTERS_EQUAL( ( void* ) LightScheduler_Wakeup, ( void* ) FakeTimeService_GetAlarmCallback() );
+    POINTERS_EQUAL( ( void* ) LightScheduler_WakeUp, ( void* ) FakeTimeService_GetAlarmCallback() );
     LONGS_EQUAL( 60, FakeTimeSource_GetAlarmPeriodInSeconds() );
 }
 
@@ -179,9 +179,9 @@ TEST( LightScheduler, NoScheduleNothingHappens )
     /* set 100 (1:40 am) as the minute of the day and Monday as the day of the week */
     setTimeTo( MONDAY, 100 );
 
-    /* The test simulates a callback to LightScheduler_Wakeup(), like the production TimeService
+    /* The test simulates a callback to LightScheduler_WakeUp(), like the production TimeService
        would do every minute */
-    LightScheduler_Wakeup();
+    LightScheduler_WakeUp();
 
     /* Since no light ID and state have been scheduled, the expected light ID and state
        have to be unknown due to the Light Scheduler's initialization (i.e. Light Controller's
@@ -204,9 +204,9 @@ TEST( LightScheduler, ScheduleOnEverydayNotTimeYet )
        light ID 3 to turn on everyday) */
     setTimeTo( MONDAY, 1199 );
 
-    /* The test simulates a callback to LightScheduler_Wakeup(), like the production TimeService
+    /* The test simulates a callback to LightScheduler_WakeUp(), like the production TimeService
        would do every minute */
-    LightScheduler_Wakeup();
+    LightScheduler_WakeUp();
 
     /* Finally the test checks the expected outcome (since the time for the scheduled light ID has
        not been reached, then both light ID and state are still unknown, due to the initial state
@@ -229,9 +229,9 @@ TEST( LightScheduler, ScheduleOnEverydayItsTime )
        light ID 3 to turn on everyday) */
     setTimeTo( MONDAY, 1200 );
 
-    /* The test simulates a callback to LightScheduler_Wakeup(), like the production TimeService
+    /* The test simulates a callback to LightScheduler_WakeUp(), like the production TimeService
        would do every minute */
-    LightScheduler_Wakeup();
+    LightScheduler_WakeUp();
  
     /* Finally the test checks the expected outcome (the time for the scheduled light ID has been reached,
        then light ID should be 3 and state should be ON)  */
@@ -253,9 +253,9 @@ TEST( LightScheduler, ScheduleOffEverydayItsTime )
        light ID 3 to turn off everyday) */
     setTimeTo( MONDAY, 1200 );
 
-    /* The test simulates a callback to LightScheduler_Wakeup(), like the production TimeService
+    /* The test simulates a callback to LightScheduler_WakeUp(), like the production TimeService
        would do every minute */
-    LightScheduler_Wakeup();
+    LightScheduler_WakeUp();
 
     /* Finally the test checks the expected outcome (the time for the scheduled light ID has been reached,
        then light ID should be 3 and state should be OFF)  */
@@ -276,7 +276,7 @@ TEST( LightScheduler, ScheduleWeekendItsMonday )
 
     /* callback to Light Scheduler wakeup (this compares the current time to any scheduled events,
        if there's a match then it will turn on or off the specified light ID) */
-    LightScheduler_Wakeup();
+    LightScheduler_WakeUp();
 
     /* compare the light ID and its state, they should be unknowns because the scheduled event
        has not been reached (scheduled a light on on weekends for 8pm, but its currently monday 8pm,
@@ -298,7 +298,7 @@ TEST( LightScheduler, ScheduleTuesdayButItsMonday )
 
     /* callback to Light Scheduler wakeup (this compares the current time to any scheduled events,
        if there's a match then it will turn on or off the specified light ID) */
-    LightScheduler_Wakeup();
+    LightScheduler_WakeUp();
 
     /* compare the light ID and its state, they should be unknowns because the scheduled event
        has not been reached (scheduled a light on on tuesdays for 8pm, but its currently monday 8pm,
@@ -320,7 +320,7 @@ TEST( LightScheduler, ScheduleTuesdayAndItsTuesday )
 
     /* callback to Light Scheduler wakeup (this compares the current time to any scheduled events,
        if there's a match then it will turn on or off the specified light ID) */
-    LightScheduler_Wakeup();
+    LightScheduler_WakeUp();
 
     /* compare the light ID and its state, they should be light ID 3 and light state on because the
        scheduled event has been reached (scheduled light ID 3 on on tuesdays for 8pm. Currently it's tuesday 8pm,
@@ -342,7 +342,7 @@ TEST( LightScheduler, ScheduleWeekendItsFriday )
 
     /* callback to Light Scheduler wakeup (this compares the current time to any scheduled events,
        if there's a match then it will turn on or off the specified light ID) */
-    LightScheduler_Wakeup();
+    LightScheduler_WakeUp();
 
     /* compare the light ID and its state, they should be unknowns because the scheduled event
        has not been reached (scheduled a light on on weekends, i.e. saturdays and sundays for 8pm,
@@ -364,7 +364,7 @@ TEST( LightScheduler, ScheduleWeekendItsSaturday )
 
     /* callback to Light Scheduler wakeup (this compares the current time to any scheduled events,
        if there's a match then it will turn on or off the specified light ID) */
-    LightScheduler_Wakeup();
+    LightScheduler_WakeUp();
 
     /* compare the light ID and its state, they should be light ID 3 and light state on because the
        scheduled event has been reached (scheduled light ID 3 on on weekends (saturdays and sundays) for 8pm.
@@ -386,7 +386,7 @@ TEST( LightScheduler, ScheduleWeekendItsSunday )
 
     /* callback to Light Scheduler wakeup (this compares the current time to any scheduled events,
        if there's a match then it will turn on or off the specified light ID) */
-    LightScheduler_Wakeup();
+    LightScheduler_WakeUp();
 
     /* compare the light ID and its state, they should be light ID 3 and light state on because the
        scheduled event has been reached (scheduled light ID 3 on on weekends (saturdays and sundays) for 8pm.
@@ -413,7 +413,7 @@ TEST( LightScheduler, ScheduleTwoEventsAtTheSameTime )
 
     /* callback to Light Scheduler wakeup (this compares the current time to any scheduled events,
        if there's a match then it will turn on or off the specified light ID(s)) */
-    LightScheduler_Wakeup();
+    LightScheduler_WakeUp();
 
     /* compare the light ID and its state, they should be light ID 3 and light state on because the
        scheduled event has been reached (scheduled light ID 3 on on sunday for 8pm.
@@ -482,7 +482,7 @@ TEST( LightScheduler, RemoveMultipleScheduledEvent )
 
     /* callback to Light Scheduler wakeup (this compares the current time to any scheduled events,
        if there's a match then it will turn on or off the specified light ID(s)) */
-    LightScheduler_Wakeup();
+    LightScheduler_WakeUp();
 
     /* compare the light ID 6's state. It should be light state unknown because the
        scheduled event was removed with LightScheduler_ScheduleRemove() */

@@ -9,7 +9,7 @@
  * @date    2025-03-10
  */
 
-//#include "RuntimeError.h"
+#include "RuntimeError.h"
 #include "RuntimeErrorStub.h"
 
 static const char *message = "No Error";

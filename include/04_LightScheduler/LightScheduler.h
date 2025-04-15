@@ -10,10 +10,6 @@
 #ifndef LIGHTSCHEDULER_H
 #define LIGHTSCHEDULER_H
 
-    #include "LightController.h"
-    #include "TimeService.h"
-    #include "common.h"
-
     typedef enum
     {
         NOT_A_DAY = -4,
@@ -28,6 +24,7 @@
     int LightScheduler_ScheduleTurnOn( int id, Day day, int minuteOfDay );
     int LightScheduler_ScheduleTurnOff( int id, Day day, int minuteOfDay );
     int LightScheduler_ScheduleRemove( int id, Day day, int minuteOfDay );
-    void LightScheduler_Wakeup( void );
+    void LightScheduler_Randomize( int id, Day day, int minuteOfDay );
+    void LightScheduler_WakeUp( void );
 
 #endif

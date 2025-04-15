@@ -12,19 +12,31 @@
  */
 
 #include "LightScheduler.h"
+#include "LightController.h"
+#include "TimeService.h"
+#include "common.h"
+#include "RandomMinute.h"
 
 typedef struct
 {
-    int event;       /* light event (ON or OFF) to schedule */
-    int id;          /* light id to schedule */
-    Day day;         /* day of the week to schedule the light */
-    int minuteOfDay; /* minute of the day to schedule the light */
+    int event;         /* light event (ON or OFF) to schedule */
+    int id;            /* light id to schedule */
+    Day day;           /* day of the week to schedule the light */
+    int minuteOfDay;   /* minute of the day to schedule the light */
+
+    int randomize;     /* randomization feature of the light scheduler (ON or OFF) */
+    int randomMinutes; /* random minutes offset used to schedule a light event before/after the scheduled time */
 } ScheduledLightEvent;
 
 enum
 {
+    TURN_OFF,  TURN_ON,
+    RANDOM_ON, RANDOM_OFF
+};
+
+enum
+{
     UNUSED = -1,
-    TURN_OFF, TURN_ON,
     MAX_EVENTS_NUMBER = 128 /* max number of possible scheduled events */
 };
 
@@ -62,6 +74,17 @@ static int scheduleEvent( int id, Day day, int minuteOfDay, int event )
             /* assign the scheduled event (either to turn on or off the light) */
             scheduledEvents[ i ].event = event;
 
+            /* disable randomization of the scheduled event (light will be turned on/off)
+               at the exact scheduled minute (unless the event is randomized by LightScheduler_Randomize()) */
+            scheduledEvents[ i ].randomize = RANDOM_OFF;
+
+            /* set to 0 the random minutes of the Light Scheduler (this value will be updated every time
+               LightScheduler_Randomize() is called
+
+               Note: LightScheduler_WakeUp() also calls LightScheduler_Randomize() if the time for the
+                     scheduled event has been reached */
+            scheduledEvents[ i ].randomMinutes = 0;
+
             /* break out of the loop. The event slot has now been scheduled,
                there's no reason to keep looping */
             return LS_OK;
@@ -74,10 +97,21 @@ static int scheduleEvent( int id, Day day, int minuteOfDay, int event )
 
 static void operateLight( ScheduledLightEvent *lightEvent )
 {
-    /* operateLight captures the idea behind the if/else chain */
-
     /* turn the light on or off as scheduled */
     lightEvent->event == TURN_ON ? LightController_On( lightEvent->id ) : LightController_Off( lightEvent->id );
+
+    /* if randomization of the scheduled event is enabled */
+    if ( lightEvent->randomize == RANDOM_ON )
+    {
+        /* get a new random minute offset for the Light Scheduler */
+        lightEvent->randomMinutes = RandomMinute_Get();
+    }
+    /* if randomization is not enabled */
+    else
+    {
+        /* set to 0 the random minute */
+        lightEvent->randomMinutes = 0;
+    }
 }
 
 static int doesLightRespondToday( int today, int scheduledDay )
@@ -110,8 +144,14 @@ static void processEventDueNow( Time *time, ScheduledLightEvent *lightEvent )
     /* processEventDueNow is responsible for conditionally triggering a single event.
        This function is all set to be called from a loop when support for multiple events is added */
 
-    int today        = time->dayOfWeek;
-    int scheduledDay = lightEvent->day;
+    /* simplify current day and current minute */
+    int today  = time->dayOfWeek;
+    int minute = time->minuteOfDay;
+
+    /* simplify scheduled event parameters */
+    int scheduledDay           = lightEvent->day;
+    int scheduledMinute        = lightEvent->minuteOfDay;
+    int scheduledRandomMinutes = lightEvent->randomMinutes;
 
     /* if the scheduled event light ID is not UNUSED (i.e. the light has been scheduled to be turned on/off
        via LightScheduler_ScheduleTurnOn()/Off() */
@@ -122,8 +162,9 @@ static void processEventDueNow( Time *time, ScheduledLightEvent *lightEvent )
     if ( doesLightRespondToday( today, scheduledDay ) == FALSE )
         return;
 
-    /* if the scheduled minute for the light to be turned on/off is not the same as the current minute of the day */
-    if ( lightEvent->minuteOfDay != time->minuteOfDay )
+    /* if the scheduled minute for the light to be turned on/off (taking into acount the random minutes offset)
+       is not the same as the current minute of the day */
+    if ( ( scheduledMinute + scheduledRandomMinutes ) != minute ) 
         return;
 
     /* else: a light was scheduled to turn on or off at this precise time */
@@ -146,42 +187,46 @@ void LightScheduler_Create( void )
     }
 
     /* Register the alarm callback function to be called "every minute".
-       In this case LightScheduler_Wakeup() */
-    TimeService_SetPeriodicAlarmInSeconds( 60, LightScheduler_Wakeup );
+       In this case LightScheduler_WakeUp() */
+    TimeService_SetPeriodicAlarmInSeconds( 60, LightScheduler_WakeUp );
 }
 
 void LightScheduler_Destroy( void )
 {
     /* unregister the alarm callback function previously registered with TimeService_SetPeriodicAlarmInSeconds()
        which is called in LightScheduler_Create() */
-    TimeService_CancelPeriodicAlarmInSeconds( 60, LightScheduler_Wakeup );
+    TimeService_CancelPeriodicAlarmInSeconds( 60, LightScheduler_WakeUp );
 }
 
 int LightScheduler_ScheduleTurnOn( int id, Day day, int minuteOfDay )
 {
-    /* This function DOES NOT turn on the scheduled light(s) when the time comes.
+    /* This function DOES NOT turn on the scheduled light when the time comes.
        That action is for the Light Controller to do, which is called by the
        Light Scheduler wake up */
 
-    /* schedule the event(s):
-       - set the light ID(s)
-       - set the day of the week to schedule the event(s)
-       - set the minute of the day to schedule the event(s)
-       - set the type of event(s) as turn the light(s) on */
+    /* schedule the event:
+       - set the light ID
+       - set the day of the week to schedule the event
+       - set the minute of the day to schedule the event
+       - set the type of event as turn the light on
+       - disable randomization of the scheduled event
+       - set to 0 the random minute (random minute is used when randomization is enabled) */
     return scheduleEvent( id, day, minuteOfDay, TURN_ON );
 }
 
 int LightScheduler_ScheduleTurnOff( int id, Day day, int minuteOfDay )
 {
-    /* This function DOES NOT turn off the scheduled light(s) when the time comes.
+    /* This function DOES NOT turn off the scheduled light when the time comes.
        That action is for the Light Controller to do, which is called by the
        Light Scheduler wake up */
 
-    /* schedule the event(s):
-       - set the light ID(s)
-       - set the day of the week to schedule the event(s)
-       - set the minute of the day to schedule the event(s)
-       - set the type of event(s) as turn the light(s) off */
+    /* schedule the event:
+       - set the light ID
+       - set the day of the week to schedule the event
+       - set the minute of the day to schedule the event
+       - set the type of event as turn the light off
+       - disable randomization of the scheduled event
+       - set to 0 the random minute (random minute is used when randomization is enabled) */
     return scheduleEvent( id, day, minuteOfDay, TURN_OFF );
 }
 
@@ -218,11 +263,36 @@ int LightScheduler_ScheduleRemove( int id, Day day, int minuteOfDay )
     return LS_EVENT_DOES_NOT_EXIST;
 }
 
-void LightScheduler_Wakeup( void )
+void LightScheduler_Randomize( int id, Day day, int minuteOfDay )
+{  
+    int i; /* scheduled event index */
+
+    /* pointer to a scheduled event */
+    ScheduledLightEvent *e;
+
+    /* search for the specified event in the scheduled event slots */
+    for ( i = 0; i < MAX_EVENTS_NUMBER; i++ )
+    {
+        /* update the scheduled event pointer to point to the current index in the scheduled events array */
+        e = &scheduledEvents[ i ];
+
+        /* if the specified event exists */
+        if ( ( e->id == id ) && ( e->day == day ) && ( e->minuteOfDay == minuteOfDay ) )
+        {
+            /* enable randomization of the scheduled event */
+            e->randomize = RANDOM_ON;
+
+            /* get a random minute */
+            e->randomMinutes = RandomMinute_Get();
+        }
+    }
+}
+
+void LightScheduler_WakeUp( void )
 {
     /* This is the function to be provided to the Time Service as a periodic callback function */
 
-    /* Now LightScheduler_Wakeup() handles multiple-event proceessing */
+    /* Now LightScheduler_WakeUp() handles multiple-event proceessing */
 
     int i; /* scheduled event index */
     Time time; /* struct to hold current time (day of the week and minute of the day) */

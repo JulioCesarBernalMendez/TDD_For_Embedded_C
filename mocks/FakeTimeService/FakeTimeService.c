@@ -28,6 +28,7 @@
  */
 
 #include "FakeTimeService.h"
+#include "common.h"
 
 /* structure to hold:
    - minute of the day
