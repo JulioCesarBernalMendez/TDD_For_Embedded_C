@@ -42,7 +42,8 @@ TEST_GROUP( FormatOutputSpy )
 
 TEST( FormatOutputSpy, HelloWorld )
 {
-    /* Allocate (dynamically) space to hold a buffer of 20 bytes (i.e. 20 characters plus null termination).
+    /* Allocate (dynamically) space to hold a buffer of 20 bytes 
+       (i.e. 20 characters plus one extra character for null termination).
        This will update the buffer in FormatOutputSpy.c */
     FormatOutputSpy_Create( 20 );
 
@@ -52,4 +53,25 @@ TEST( FormatOutputSpy, HelloWorld )
 
     /* compare the buffer with the expected result */
     STRCMP_EQUAL( "Hello, World\n", FormatOutputSpy_GetOutput() );
+}
+
+TEST( FormatOutputSpy, LimitTheOutputBufferSize )
+{
+    /* This test illustrates that the spy only captures the number of characters
+       specified in FormatOutputSpy_Create() */
+    
+    /* Allocate (dynamically) space to hold a buffer of 4 bytes
+       (i.e. 4 characters plus one extra character for null termination).
+       This will update the buffer in FormatOutputSpy.c */
+    FormatOutputSpy_Create( 4 );
+
+    /* Write "Hello, World\n" as if it was the real FormatOutput() which uses printf().
+       Here the FormatOutputSpy() will catch that and redirect it into the buffer in FormatOutputSpy.c.
+       
+       Since the buffer has a size of 4 (plus one extra character for null termination), then only 
+       "Hell" was actually written */
+    FormatOutput( "Hello, World\n" );
+
+    /* compare the buffer with the expected result */
+    STRCMP_EQUAL( "Hell", FormatOutputSpy_GetOutput() );
 }
