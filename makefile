@@ -125,6 +125,7 @@ objects_cpputest: mkdirs_cpputest \
                   test_cpputest/build/objs/LightControllerSpy.o test_cpputest/build/objs/LightControllerSpyTest.o \
                   test_cpputest/build/objs/FakeTimeService.o test_cpputest/build/objs/FakeTimeServiceTest.o \
                   test_cpputest/build/objs/RandomMinute.o test_cpputest/build/objs/RandomMinuteTest.o \
+                  test_cpputest/build/objs/FormatOutputSpy.o test_cpputest/build/objs/Utils.o test_cpputest/build/objs/FormatOutputSpytest.o \
                   test_cpputest/build/objs/LightScheduler.o test_cpputest/build/objs/LightSchedulerTest.o \
                   test_cpputest/build/objs/FakeRandomMinute.o test_cpputest/build/objs/LightSchedulerRandomizeTest.o \
                   test_cpputest/build/objs/AllCppUTestTests.o
@@ -171,6 +172,18 @@ test_cpputest/build/objs/RandomMinute.o: src/04_LightScheduler/RandomMinute/Rand
 test_cpputest/build/objs/RandomMinuteTest.o: test_cpputest/04_LightScheduler/RandomMinute/RandomMinuteTest.cpp
 	g++ -c -g -Icpputest/include/CppUTest/ -Iinclude/04_LightScheduler/RandomMinute/ $^ -o $@
 
+#rule to compile FormatOutputSpy.c into FormatOutputSpy.o
+test_cpputest/build/objs/FormatOutputSpy.o: mocks/FormatOutputSpy/FormatOutputSpy.c
+	gcc -c -g $^ -o $@
+
+#rule to compile Utils.c into Utils.o
+test_cpputest/build/objs/Utils.o: src/04_LightScheduler/util/Utils.c
+	gcc -c -g -Iinclude/util/ $^ -o $@
+
+#rule to compile FormatOutputSpyTest.cpp into FormatOutputSpytest.o
+test_cpputest/build/objs/FormatOutputSpytest.o: test_cpputest/04_LightScheduler/FormatOutputSpy/FormatOutputSpyTest.cpp
+	g++ -c -g -Icpputest/include/CppUTest/ -Iinclude/util/ -Imocks/FormatOutputSpy/ $^ -o $@
+
 #rule to compile LightScheduler.c into LightScheduler.o
 test_cpputest/build/objs/LightScheduler.o: src/04_LightScheduler/LightScheduler.c
 	gcc -c -g -Iinclude/04_LightScheduler/ -Iinclude/04_LightScheduler/LightController/ -Iinclude/04_LightScheduler/TimeService/ -Iinclude/util/ -Iinclude/04_LightScheduler/RandomMinute/ $^ -o $@
@@ -196,6 +209,7 @@ test_cpputest/build/CppUTestTests.exe: test_cpputest/build/objs/DummyDriver.o te
                                        test_cpputest/build/objs/LightControllerSpy.o test_cpputest/build/objs/LightControllerSpyTest.o \
                                        test_cpputest/build/objs/FakeTimeService.o test_cpputest/build/objs/FakeTimeServiceTest.o \
                                        test_cpputest/build/objs/RandomMinute.o test_cpputest/build/objs/RandomMinuteTest.o \
+                                       test_cpputest/build/objs/FormatOutputSpy.o test_cpputest/build/objs/Utils.o test_cpputest/build/objs/FormatOutputSpytest.o \
                                        test_cpputest/build/objs/LightScheduler.o test_cpputest/build/objs/LightSchedulerTest.o \
                                        test_cpputest/build/objs/FakeRandomMinute.o test_cpputest/build/objs/LightSchedulerRandomizeTest.o \
                                        test_cpputest/build/objs/AllCppUTestTests.o
