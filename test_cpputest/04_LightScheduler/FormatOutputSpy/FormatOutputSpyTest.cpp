@@ -89,17 +89,50 @@ TEST( FormatOutputSpy, PrintMultipleTimes )
     /* Write "Hello" as if it was the real FormatOutput() which uses printf().
        Here the FormatOutputSpy() will catch that and redirect it into the buffer in FormatOutputSpy.c.
        
-       Since the buffer is 25 bytes long and only 5 bytes were written to it,
-       then it has 20 bytes available to write */
+       Since the buffer is 25 bytes long and 5 bytes are written here, it has enough space */
     FormatOutput( "Hello" );
 
     /* Write ", World\n" as if it was the real FormatOutput() which uses printf().
        Here the FormatOutputSpy() will catch that and append it into the buffer in FormatOutputSpy.c.
        
-       Since the buffer is 25 bytes long and it has 20 bytes available,
-       then it still has enough bytes available to store these other 9 characters */
+       Since the buffer is 25 bytes long and 5 bytes were written before, it has 20 bytes available,
+       which is enough to store these other 8 characters */
     FormatOutput( ", World\n" );
 
     /* compare the buffer with the expected result */
     STRCMP_EQUAL( "Hello, World\n", FormatOutputSpy_GetOutput() );
+}
+
+TEST( FormatOutputSpy, PrintMultipleOutputsPastFull )
+{
+    /* In this test, the spy is called multiple times with more output than the spy can capture.
+       This test assures that the output captured is limited to the specified maximum string length */
+
+    /* Allocate (dynamically) space to hold a buffer of 12 bytes
+       (i.e. 12 characters plus one extra character for null termination).
+       This will update the buffer in FormatOutputSpy.c */
+    FormatOutputSpy_Create( 12 );
+
+    /* Write "12345" as if it was the real FormatOutput() which uses printf().
+       Here the FormatOutputSpy() will catch that and redirect it into the buffer in FormatOutputSpy.c.
+       
+       Since the buffer is 12 bytes long and 5 bytes are written here, it has enough space */
+    FormatOutput( "12345" );
+
+    /* Write "67890" as if it was the real FormatOutput() which uses printf().
+       Here the FormatOutputSpy() will catch that and append it into the buffer in FormatOutputSpy.c.
+       
+       Since the buffer is 12 bytes long and 5 bytes were written before, it has 7 bytes available,
+       which is enough to store these other 5 characters */
+    FormatOutput( "67890" );
+
+    /* Write "ABCDEF" as if it was the real FormatOutput() which uses printf().
+       Here the FormatOutputSpy() will catch that and append it into the buffer in FormatOutputSpy.c.
+       
+       Since the buffer is 12 bytes long and up to this point 10 bytes have been written,
+       it only has 2 more bytes available for "AB", not enough space to store the remaining 4 characters (CDEF) */
+    FormatOutput( "ABCDEF" );
+
+    /* compare the buffer with the expected result */
+    STRCMP_EQUAL( "1234567890AB", FormatOutputSpy_GetOutput() );
 }
