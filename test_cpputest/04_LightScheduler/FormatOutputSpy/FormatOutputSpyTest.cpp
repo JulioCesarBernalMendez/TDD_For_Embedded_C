@@ -75,3 +75,31 @@ TEST( FormatOutputSpy, LimitTheOutputBufferSize )
     /* compare the buffer with the expected result */
     STRCMP_EQUAL( "Hell", FormatOutputSpy_GetOutput() );
 }
+
+TEST( FormatOutputSpy, PrintMultipleTimes )
+{
+    /* Like the real FormatOutput, the spy can be called multiple times.
+       This test shows that the spy appends characters with each FormatOutput call */
+
+    /* Allocate (dynamically) space to hold a buffer of 25 bytes
+       (i.e. 25 characters plus one extra character for null termination).
+       This will update the buffer in FormatOutputSpy.c */
+    FormatOutputSpy_Create( 25 );
+
+    /* Write "Hello" as if it was the real FormatOutput() which uses printf().
+       Here the FormatOutputSpy() will catch that and redirect it into the buffer in FormatOutputSpy.c.
+       
+       Since the buffer is 25 bytes long and only 5 bytes were written to it,
+       then it has 20 bytes available to write */
+    FormatOutput( "Hello" );
+
+    /* Write ", World\n" as if it was the real FormatOutput() which uses printf().
+       Here the FormatOutputSpy() will catch that and append it into the buffer in FormatOutputSpy.c.
+       
+       Since the buffer is 25 bytes long and it has 20 bytes available,
+       then it still has enough bytes available to store these other 9 characters */
+    FormatOutput( ", World\n" );
+
+    /* compare the buffer with the expected result */
+    STRCMP_EQUAL( "Hello, World\n", FormatOutputSpy_GetOutput() );
+}
