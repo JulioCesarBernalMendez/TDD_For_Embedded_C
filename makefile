@@ -177,11 +177,11 @@ test_cpputest/build/objs/FormatOutputSpy.o: mocks/FormatOutputSpy/FormatOutputSp
 	gcc -c -g $^ -o $@
 
 #rule to compile Utils.c into Utils.o
-test_cpputest/build/objs/Utils.o: src/04_LightScheduler/util/Utils.c
+test_cpputest/build/objs/Utils.o: src/05_CircularBuffer/util/Utils.c
 	gcc -c -g -Iinclude/util/ $^ -o $@
 
 #rule to compile FormatOutputSpyTest.cpp into FormatOutputSpytest.o
-test_cpputest/build/objs/FormatOutputSpytest.o: test_cpputest/04_LightScheduler/FormatOutputSpy/FormatOutputSpyTest.cpp
+test_cpputest/build/objs/FormatOutputSpytest.o: test_cpputest/05_CircularBuffer/FormatOutputSpy/FormatOutputSpyTest.cpp
 	g++ -c -g -Icpputest/include/CppUTest/ -Iinclude/util/ -Imocks/FormatOutputSpy/ $^ -o $@
 
 #rule to compile LightScheduler.c into LightScheduler.o
