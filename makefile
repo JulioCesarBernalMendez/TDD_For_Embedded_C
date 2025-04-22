@@ -31,29 +31,28 @@
 ####################################### Unity make rules #######################################
 
 #make test_unity: executes the specified rules for Unity compilation/linking and runs the executable
-test_unity: objects_unity \
+test_unity: mkdirs_unity \
             test_unity/build/UnityTests.exe
 	@echo ""
 	./test_unity/build/UnityTests.exe
 
 #make test_unity_verbose: executes the specified rules for Unity compilation/linking and runs the executable in verbose mode
-test_unity_verbose: objects_unity \
+test_unity_verbose: mkdirs_unity \
                     test_unity/build/UnityTests.exe
 	@echo ""
 	./test_unity/build/UnityTests.exe -v
 
 #make debug_unity: executes the specified rules for Unity compilation/linking and runs the executable in gdb debug mode
-debug_unity: objects_unity \
+debug_unity: mkdirs_unity \
              test_unity/build/UnityTests.exe
 	gdb ./test_unity/build/UnityTests.exe
 
 #make objects_unity: executes the specified rules for the directory creation and compilation used for Unity testing
-objects_unity: mkdirs_unity \
-               test_unity/build/objs/unity.o test_unity/build/objs/unity_fixture.o \
-               test_unity/build/objs/DumbExample.o test_unity/build/objs/TestDumbExample.o \
-               test_unity/build/objs/LedDriver.o test_unity/build/objs/TestLedDriver.o \
-               test_unity/build/objs/RuntimeErrorStub.o \
-               test_unity/build/objs/AllUnityTests.o
+objects_unity = test_unity/build/objs/unity.o test_unity/build/objs/unity_fixture.o \
+                test_unity/build/objs/DumbExample.o test_unity/build/objs/TestDumbExample.o \
+                test_unity/build/objs/LedDriver.o test_unity/build/objs/TestLedDriver.o \
+                test_unity/build/objs/RuntimeErrorStub.o \
+                test_unity/build/objs/AllUnityTests.o
 
 #make mkdirs_unity: creates the directory test_unity/build/objs/ used to store the compiled .o files used for Unity testing
 mkdirs_unity:
@@ -99,36 +98,32 @@ test_unity/build/objs/unity_fixture.o: unity/extras/fixture/src/unity_fixture.c
 	gcc -c -g -Iunity/extras/fixture/src/ -Iunity/src/ -Iunity/extras/memory/src/ $^ -o $@
 
 #rule to link the specified .o files into UnityTests.exe
-test_unity/build/UnityTests.exe: test_unity/build/objs/unity_fixture.o test_unity/build/objs/unity.o \
-                                 test_unity/build/objs/TestDumbExample.o test_unity/build/objs/DumbExample.o \
-                                 test_unity/build/objs/TestLedDriver.o test_unity/build/objs/LedDriver.o \
-                                 test_unity/build/objs/RuntimeErrorStub.o \
-                                 test_unity/build/objs/AllUnityTests.o
+test_unity/build/UnityTests.exe: $(objects_unity)
 	gcc $^ -o $@
 
 ####################################### CppUTest make rules #######################################
 
 #make test_cpputest: executes the specified rules for CppUTest compilation/linking and runs the executable
-test_cpputest: objects_cpputest \
+test_cpputest: mkdirs_cpputest \
                test_cpputest/build/CppUTestTests.exe
 	@echo ""
 	./test_cpputest/build/CppUTestTests.exe
 
 #make debug_cpputest: executes the specified rules for CppUTest compilation/linking and runs the executable in gdb debug mode
-debug_cpputest: objects_cpputest \
+debug_cpputest: mkdirs_cpputest \
                 test_cpputest/build/CppUTestTests.exe
 	gdb ./test_cpputest/build/CppUTestTests.exe
 
 #make objects_cpputest: executes the specified rules for the directory creation and compilation used for CppUTest testing
-objects_cpputest: mkdirs_cpputest \
-                  test_cpputest/build/objs/DummyDriver.o test_cpputest/build/objs/TestDummyDriver.o \
-                  test_cpputest/build/objs/LightControllerSpy.o test_cpputest/build/objs/LightControllerSpyTest.o \
-                  test_cpputest/build/objs/FakeTimeService.o test_cpputest/build/objs/FakeTimeServiceTest.o \
-                  test_cpputest/build/objs/RandomMinute.o test_cpputest/build/objs/RandomMinuteTest.o \
-                  test_cpputest/build/objs/FormatOutputSpy.o test_cpputest/build/objs/Utils.o test_cpputest/build/objs/FormatOutputSpytest.o \
-                  test_cpputest/build/objs/LightScheduler.o test_cpputest/build/objs/LightSchedulerTest.o \
-                  test_cpputest/build/objs/FakeRandomMinute.o test_cpputest/build/objs/LightSchedulerRandomizeTest.o \
-                  test_cpputest/build/objs/AllCppUTestTests.o
+objects_cpputest = test_cpputest/build/objs/DummyDriver.o test_cpputest/build/objs/TestDummyDriver.o \
+                   test_cpputest/build/objs/LightControllerSpy.o test_cpputest/build/objs/LightControllerSpyTest.o \
+                   test_cpputest/build/objs/FakeTimeService.o test_cpputest/build/objs/FakeTimeServiceTest.o \
+                   test_cpputest/build/objs/RandomMinute.o test_cpputest/build/objs/RandomMinuteTest.o \
+                   test_cpputest/build/objs/LightScheduler.o test_cpputest/build/objs/LightSchedulerTest.o \
+                   test_cpputest/build/objs/FakeRandomMinute.o test_cpputest/build/objs/LightSchedulerRandomizeTest.o \
+                   test_cpputest/build/objs/Utils.o test_cpputest/build/objs/FormatOutputSpy.o test_cpputest/build/objs/FormatOutputSpytest.o \
+                   test_cpputest/build/objs/CircularBuffer.o test_cpputest/build/objs/CircularBufferPrintTest.o \
+                   test_cpputest/build/objs/AllCppUTestTests.o
 
 #make mkdirs_cpputest: creates the directory test_cpputest/build/objs/ used to store the compiled .o files used for CppUTest testing
 mkdirs_cpputest:
@@ -172,18 +167,6 @@ test_cpputest/build/objs/RandomMinute.o: src/04_LightScheduler/RandomMinute/Rand
 test_cpputest/build/objs/RandomMinuteTest.o: test_cpputest/04_LightScheduler/RandomMinute/RandomMinuteTest.cpp
 	g++ -c -g -Icpputest/include/CppUTest/ -Iinclude/04_LightScheduler/RandomMinute/ $^ -o $@
 
-#rule to compile FormatOutputSpy.c into FormatOutputSpy.o
-test_cpputest/build/objs/FormatOutputSpy.o: mocks/FormatOutputSpy/FormatOutputSpy.c
-	gcc -c -g $^ -o $@
-
-#rule to compile Utils.c into Utils.o
-test_cpputest/build/objs/Utils.o: src/05_CircularBuffer/util/Utils.c
-	gcc -c -g -Iinclude/util/ $^ -o $@
-
-#rule to compile FormatOutputSpyTest.cpp into FormatOutputSpytest.o
-test_cpputest/build/objs/FormatOutputSpytest.o: test_cpputest/05_CircularBuffer/FormatOutputSpy/FormatOutputSpyTest.cpp
-	g++ -c -g -Icpputest/include/CppUTest/ -Iinclude/util/ -Imocks/FormatOutputSpy/ $^ -o $@
-
 #rule to compile LightScheduler.c into LightScheduler.o
 test_cpputest/build/objs/LightScheduler.o: src/04_LightScheduler/LightScheduler.c
 	gcc -c -g -Iinclude/04_LightScheduler/ -Iinclude/04_LightScheduler/LightController/ -Iinclude/04_LightScheduler/TimeService/ -Iinclude/util/ -Iinclude/04_LightScheduler/RandomMinute/ $^ -o $@
@@ -200,17 +183,30 @@ test_cpputest/build/objs/FakeRandomMinute.o: mocks/FakeRandomMinute/FakeRandomMi
 test_cpputest/build/objs/LightSchedulerRandomizeTest.o: test_cpputest/04_LightScheduler/LightSchedulerRandomizeTest.cpp
 	g++ -c -g -Icpputest/include/CppUTest/ -Imocks/FakeRandomMinute/ -Iinclude/04_LightScheduler/RandomMinute/ -Iinclude/04_LightScheduler/ -Imocks/FakeTimeService/ -Iinclude/04_LightScheduler/TimeService/ -Imocks/LightControllerSpy/ -Iinclude/04_LightScheduler/LightController/ $^ -o $@
 
+#rule to compile Utils.c into Utils.o
+test_cpputest/build/objs/Utils.o: src/05_CircularBuffer/util/Utils.c
+	gcc -c -g -Iinclude/util/ $^ -o $@
+
+#rule to compile FormatOutputSpy.c into FormatOutputSpy.o
+test_cpputest/build/objs/FormatOutputSpy.o: mocks/FormatOutputSpy/FormatOutputSpy.c
+	gcc -c -g $^ -o $@
+
+#rule to compile FormatOutputSpyTest.cpp into FormatOutputSpytest.o
+test_cpputest/build/objs/FormatOutputSpytest.o: test_cpputest/05_CircularBuffer/FormatOutputSpy/FormatOutputSpyTest.cpp
+	g++ -c -g -Icpputest/include/CppUTest/ -Iinclude/util/ -Imocks/FormatOutputSpy/ $^ -o $@
+
+#rule to compile CircularBuffer.c into CircularBuffer.o
+test_cpputest/build/objs/CircularBuffer.o: src/05_CircularBuffer/CircularBuffer.c
+	gcc -c -g -Iinclude/05_CircularBuffer/ -Iinclude/util/ $^ -o $@
+
+#rule to compile CircularBufferPrintTest.cpp into CircularBufferPrintTest.o
+test_cpputest/build/objs/CircularBufferPrintTest.o: test_cpputest/05_CircularBuffer/CircularBufferPrintTest.cpp
+	g++ -c -g -Icpputest/include/CppUTest/ -Iinclude/05_CircularBuffer/ -Iinclude/util/ -Imocks/FormatOutputSpy/ $^ -o $@
+
 #rule to compile AllCppUTestTests.cpp into AllCppUTestTests.o
 test_cpputest/build/objs/AllCppUTestTests.o: test_cpputest/AllCppUTestTests.cpp
 	g++ -c -g -Icpputest/include/CppUTest/ $^ -o $@
 
 #rule to link the specified .o files into CppUTestTests.exe
-test_cpputest/build/CppUTestTests.exe: test_cpputest/build/objs/DummyDriver.o test_cpputest/build/objs/TestDummyDriver.o \
-                                       test_cpputest/build/objs/LightControllerSpy.o test_cpputest/build/objs/LightControllerSpyTest.o \
-                                       test_cpputest/build/objs/FakeTimeService.o test_cpputest/build/objs/FakeTimeServiceTest.o \
-                                       test_cpputest/build/objs/RandomMinute.o test_cpputest/build/objs/RandomMinuteTest.o \
-                                       test_cpputest/build/objs/FormatOutputSpy.o test_cpputest/build/objs/Utils.o test_cpputest/build/objs/FormatOutputSpytest.o \
-                                       test_cpputest/build/objs/LightScheduler.o test_cpputest/build/objs/LightSchedulerTest.o \
-                                       test_cpputest/build/objs/FakeRandomMinute.o test_cpputest/build/objs/LightSchedulerRandomizeTest.o \
-                                       test_cpputest/build/objs/AllCppUTestTests.o
+test_cpputest/build/CppUTestTests.exe: $(objects_cpputest)
 	g++ $^ -Lcpputest/lib -lCppUTest -o $@
