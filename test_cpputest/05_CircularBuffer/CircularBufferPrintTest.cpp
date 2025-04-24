@@ -47,7 +47,7 @@ TEST_GROUP( CircularBufferPrint )
         /* Allocate (dynamically) space to hold a buffer of 10 integer values */
         buffer = CircularBuffer_Create( 10 );
 
-        /* Get current string buffer (it should read "") */
+        /* Get pointer to the current string buffer (it should read "") */
         actualOutput = FormatOutputSpy_GetOutput();
     }
 
@@ -63,7 +63,11 @@ TEST_GROUP( CircularBufferPrint )
  
 TEST( CircularBufferPrint, PrintEmpty )
 {
-    /* At this point both the string buffer and circular buffer are already created and empty */
+    /* This is the simplest case, printing an empty circular buffer.
+       It seems too simple to test, but it is a boundary test that should not crash the system,
+       and the simple case helps get the test fixture set up properly. */
+
+    /* At this point both the string buffer (actualOutput) and circular buffer (buffer) are already created and empty (see setup()) */
 
     /* The expected circular buffer integer values are contained within the '<>' characters (i.e. is empty) */
     expectedOutput = "Circular buffer content:\n<>\n";
@@ -71,12 +75,58 @@ TEST( CircularBufferPrint, PrintEmpty )
     /* "Print" the contents of the circular buffer.
     
        Here CircularBuffer_Print() uses FormatOutput(), but FormatOutput() does not point to the default printf(),
-       instead it points to the FormatOutputSpy(), so the circular buffer output will be redirected to 'buffer' instead
+       instead it points to the FormatOutputSpy(), so the circular buffer output will be redirected to 'buffer' instead,
        like this: "Circular buffer content:\n<>\n".
        
        Similarly the circular buffer integer values are contained within the '<>' characters. 
        The characters "Circular buffer content:\n<" and ">\n" are not part of the circular buffer,
-       they are part of the string buffer created with FormatOutputSpy_Create() */
+       they are part of the string buffer created with FormatOutputSpy_Create().
+       
+       Notes:
+       - 'buffer' is the structure that holds the circular buffer parameters and values
+       - 'buffer->values[]' is the actual circular buffer that stores integer values
+       - the string used to print the circular buffer contents is actually a pointer to a memory
+         location (dynamically) allocated by (in this case) FormatOutputSpy_Create(),
+         (see static char *buffer in FormatOutputSpy.c).
+         
+       Production code uses printf() instead of FormatOutputSpy() to print the circular buffer contents */
+    CircularBuffer_Print( buffer );
+
+    /* compare the expected results */
+    STRCMP_EQUAL( expectedOutput, actualOutput );
+}
+
+TEST( CircularBufferPrint, PrintAfterOneIsPut )
+{
+    /* This test is another boundary test. It checks that a circular buffer containing a single item
+       prints properly */
+
+    /* At this point both the string buffer (actualOutput) and circular buffer (buffer) are already created and empty (see setup()) */
+
+    /* The expected circular buffer integer values are contained within the '<>' characters (i.e. 17) */
+    expectedOutput = "Circular buffer content:\n<17>\n";
+
+    /* insert the value 17 into the circular buffer */
+    CircularBuffer_Put( buffer, 17 );
+
+    /* "Print" the contents of the circular buffer.
+    
+       Here CircularBuffer_Print() uses FormatOutput(), but FormatOutput() does not point to the default printf(),
+       instead it points to the FormatOutputSpy(), so the circular buffer output will be redirected to 'buffer' instead,
+       like this: "Circular buffer content:\n<>\n".
+       
+       Similarly the circular buffer integer values are contained within the '<>' characters. 
+       The characters "Circular buffer content:\n<" and ">\n" are not part of the circular buffer,
+       they are part of the string buffer created with FormatOutputSpy_Create().
+       
+       Notes:
+       - 'buffer' is the structure that holds the circular buffer parameters and values
+       - 'buffer->values[]' is the actual circular buffer that stores integer values
+       - the string used to print the circular buffer contents is actually a pointer to a memory
+         location (dynamically) allocated by (in this case) FormatOutputSpy_Create(),
+         (see static char *buffer in FormatOutputSpy.c).
+         
+       Production code uses printf() instead of FormatOutputSpy() to print the circular buffer contents */
     CircularBuffer_Print( buffer );
 
     /* compare the expected results */

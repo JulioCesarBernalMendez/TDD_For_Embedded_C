@@ -34,7 +34,7 @@ CircularBuffer CircularBuffer_Create( int capacity )
 
     /* Allocate (dynamically) an array of integers to hold the circular buffer's values
        and initialize all of them to zero */
-    self->values   = calloc( capacity + 1, sizeof( int ) );
+    self->values = calloc( capacity + 1, sizeof( int ) );
 
     /* delimit the circular buffer */
     self->values[ capacity ] = BUFFER_GUARD;
@@ -50,6 +50,33 @@ void CircularBuffer_Destroy( CircularBuffer self )
 
     /* Deallocate the circular buffer */
     free( self );
+}
+
+int CircularBuffer_Put( CircularBuffer self, int value )
+{
+    /* if the circular buffer is already full */
+    if ( self->count >= self->capacity )
+    {
+        /* don't insert anything into the circular buffer */
+        return 0;
+    }
+
+    /* otherwhise ... */
+
+    /* insert the integer value into the circular buffer */
+    self->values[ self->index++ ] = value;
+
+    /* if index ("pointer" to next location to insert) is out of the circular buffer's bounds */
+    if ( self->index >= self->capacity )
+    {
+        /* restart the index */
+        self->index = 0;
+    }
+
+    /* increase the number of elements currently stored in the circular buffer */
+    self->count++;
+
+    return 1;
 }
 
 void CircularBuffer_Print( CircularBuffer self )
@@ -72,7 +99,7 @@ void CircularBuffer_Print( CircularBuffer self )
         /* provide format to the current value read from the circular buffer */
         FormatOutput( "%d", self->values[ currentValue++ ] );
 
-        /* if index is out of the circular buffer's bounds */
+        /* if outdex ("pointer" to next value to print) is out of the circular buffer's bounds */
         if ( currentValue >= self->capacity )
         {
             /* restart the index */
