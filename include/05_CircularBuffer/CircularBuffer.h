@@ -15,6 +15,7 @@
     CircularBuffer CircularBuffer_Create( int capacity );
     void CircularBuffer_Destroy( CircularBuffer self );
     int CircularBuffer_Put( CircularBuffer self, int value );
+    int CircularBuffer_Get( CircularBuffer self );
     void CircularBuffer_Print( CircularBuffer self );
 
 #endif

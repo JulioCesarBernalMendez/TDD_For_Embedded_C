@@ -57,7 +57,7 @@ int CircularBuffer_Put( CircularBuffer self, int value )
     /* if the circular buffer is already full */
     if ( self->count >= self->capacity )
     {
-        /* don't insert anything into the circular buffer */
+        /* fail to insert anything into the circular buffer */
         return 0;
     }
 
@@ -69,24 +69,60 @@ int CircularBuffer_Put( CircularBuffer self, int value )
     /* if index ("pointer" to next location to insert) is out of the circular buffer's bounds */
     if ( self->index >= self->capacity )
     {
-        /* restart the index */
+        /* restart the index to the beginning of the circular buffer */
         self->index = 0;
     }
 
-    /* increase the number of elements currently stored in the circular buffer */
+    /* increase by one the number of elements currently stored in the circular buffer */
     self->count++;
 
     return 1;
 }
 
+int CircularBuffer_Get( CircularBuffer self )
+{
+    int value; /* value read */
+
+    /* if the circular buffer is empty */
+    if ( self->count <= 0 )
+    {
+        /* fail to read from the circular buffer */
+        return 0;
+    }
+
+    /* otherwise ... */
+
+    /* read the oldest entry in the circular buffer */
+    value = self->values[ self->outdex++ ];
+
+    /* if outdex ("pointer" to next location to read) is out of the circular buffer's bounds */
+    if ( self->outdex >= self->capacity )
+    {
+        /* restart the outdex to the beginning of the circular buffer */
+        self->outdex = 0;
+    }
+
+    /* reduce by one the number of elements currently stored in the circular buffer */
+    self->count--;
+
+    return value;
+}
+
+
 void CircularBuffer_Print( CircularBuffer self )
 {
+    /* This function only "peeks" at the circular buffer contents,
+       the circular buffer values and internal "pointers" (index/outdex) are not modified unlike
+       functions CircularBuffer_Put() and CircularBuffer_Get() */
+
     int i; /* index */
     int currentValue = self->outdex; /* "pointer" to the next location to read a value from the circular buffer */
 
     FormatOutput( "Circular buffer content:\n<" );
 
-    /* loop through the circular buffer('s array) */
+    /* loop through the circular buffer('s array)
+       note: the looping won't start from position zero of the circular buffer, instead will
+             start at 'outdex' (next value to read) and will read 'count' number of values */
     for ( i = 0; i < self->count; i++ )
     {
         /* for each value (if any) of the circular buffer */
@@ -102,7 +138,7 @@ void CircularBuffer_Print( CircularBuffer self )
         /* if outdex ("pointer" to next value to print) is out of the circular buffer's bounds */
         if ( currentValue >= self->capacity )
         {
-            /* restart the index */
+            /* restart the index to the beginning of the circular buffer */
             currentValue = 0;
         }
     }
