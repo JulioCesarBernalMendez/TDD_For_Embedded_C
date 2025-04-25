@@ -171,3 +171,48 @@ TEST( CircularBufferPrint, PrintNotYetWrappedOrFull )
     /* compare the expected results */
     STRCMP_EQUAL( expectedOutput, actualOutput );
 }
+
+TEST( CircularBufferPrint, PrintNotYetWrappedAndIsFull )
+{
+    /* Here is the test for another boundary case, the buffer is completely full,
+       created with a capacity of five, but has not yet wrapped back around to the first location */
+
+    /* Create a circular buffer with a capacity of five */
+    CircularBuffer b = CircularBuffer_Create( 5 );
+
+    /* At this point both the string buffer (actualOutput) and the circular buffer with a capacity of 5 (b)
+       are already created and empty (see setup()) */
+
+    /* The expected circular buffer integer values are contained within the '<>' characters (i.e. 31 41 59 26 and 53) */
+    expectedOutput = "Circular buffer content:\n<31, 41, 59, 26, 53>\n";
+
+    /* insert the values 31, 41, 59, 26 and 53 into the circular buffer */
+    CircularBuffer_Put( b, 31 );
+    CircularBuffer_Put( b, 41 );
+    CircularBuffer_Put( b, 59 );
+    CircularBuffer_Put( b, 26 );
+    CircularBuffer_Put( b, 53 );
+
+    /* "Print" the contents of the circular buffer.
+    
+       Here CircularBuffer_Print() uses FormatOutput(), but FormatOutput() does not point to the default printf(),
+       instead it points to the FormatOutputSpy(), so the circular buffer output will be redirected to 'b' instead,
+       like this: "Circular buffer content:\n<>\n".
+       
+       Similarly the circular buffer integer values are contained within the '<>' characters. 
+       The characters "Circular buffer content:\n<" and ">\n" are not part of the circular buffer,
+       they are part of the string buffer created with FormatOutputSpy_Create().
+       
+       Notes:
+       - 'b' is the structure that holds the circular buffer parameters and values
+       - 'b->values[]' is the actual circular buffer that stores integer values
+       - the string used to print the circular buffer contents is actually a pointer to a memory
+         location (dynamically) allocated by (in this case) FormatOutputSpy_Create(),
+         (see static char *buffer in FormatOutputSpy.c).
+         
+       Production code uses printf() instead of FormatOutputSpy() to print the circular buffer contents */
+    CircularBuffer_Print( b );
+
+    /* compare the expected results */
+    STRCMP_EQUAL( expectedOutput, actualOutput );
+}
