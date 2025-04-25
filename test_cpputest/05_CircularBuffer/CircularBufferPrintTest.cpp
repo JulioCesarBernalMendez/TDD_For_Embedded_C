@@ -132,3 +132,42 @@ TEST( CircularBufferPrint, PrintAfterOneIsPut )
     /* compare the expected results */
     STRCMP_EQUAL( expectedOutput, actualOutput );
 }
+
+TEST( CircularBufferPrint, PrintNotYetWrappedOrFull )
+{
+    /* This test handles the case when there are a few items in the buffer,
+       but it is not full and has not wrapped around to the first slot */
+
+    /* At this point both the string buffer (actualOutput) and circular buffer (buffer) are already created and empty (see setup()) */
+
+    /* The expected circular buffer integer values are contained within the '<>' characters (i.e. 10 20 and 30) */
+    expectedOutput = "Circular buffer content:\n<10, 20, 30>\n";
+
+    /* insert the values 10, 20 and 30 into the circular buffer */
+    CircularBuffer_Put( buffer, 10 );
+    CircularBuffer_Put( buffer, 20 );
+    CircularBuffer_Put( buffer, 30 );
+
+    /* "Print" the contents of the circular buffer.
+    
+       Here CircularBuffer_Print() uses FormatOutput(), but FormatOutput() does not point to the default printf(),
+       instead it points to the FormatOutputSpy(), so the circular buffer output will be redirected to 'buffer' instead,
+       like this: "Circular buffer content:\n<>\n".
+       
+       Similarly the circular buffer integer values are contained within the '<>' characters. 
+       The characters "Circular buffer content:\n<" and ">\n" are not part of the circular buffer,
+       they are part of the string buffer created with FormatOutputSpy_Create().
+       
+       Notes:
+       - 'buffer' is the structure that holds the circular buffer parameters and values
+       - 'buffer->values[]' is the actual circular buffer that stores integer values
+       - the string used to print the circular buffer contents is actually a pointer to a memory
+         location (dynamically) allocated by (in this case) FormatOutputSpy_Create(),
+         (see static char *buffer in FormatOutputSpy.c).
+         
+       Production code uses printf() instead of FormatOutputSpy() to print the circular buffer contents */
+    CircularBuffer_Print( buffer );
+
+    /* compare the expected results */
+    STRCMP_EQUAL( expectedOutput, actualOutput );
+}
